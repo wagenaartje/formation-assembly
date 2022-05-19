@@ -1,3 +1,4 @@
+from cv2 import absdiff
 import numpy as np
 from evaluation import evaluate_population
 from settings import *
@@ -54,11 +55,10 @@ while True:
 
     ''''Stage II: Tournament selection '''
     total_population = np.concatenate((population,offspring), axis=0)
-    fitness, positions = evaluate_population(total_population)
+    fitness = evaluate_population(total_population)
 
     # NOTE! There is randomness, so genome will behave differently.
     best_genome = total_population[np.argmin(fitness),:]
-    np.save('best_position.npy', positions[np.argmin(fitness)] )
 
     #if epoch - best_epoch > 5:
     #    break
