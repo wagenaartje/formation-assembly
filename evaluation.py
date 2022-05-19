@@ -48,15 +48,15 @@ formation -= np.reshape(np.mean(formation,axis=1),(1,1,2))
 
 permutations = list(itertools.permutations(range(n_agents),n_agents))
 
-
+initial_position = np.random.rand(1,n_agents,2) * 4 - 2
 
 def evaluate_population (population):
     total_fitnesses = np.zeros(population.shape[0])
     old_positions = np.zeros((n_evals, population.shape[0], n_agents, 2))
     for j in range(n_evals):
         # They start in a 2x2 area
-        initial_position = np.random.rand(1,n_agents,2) * 4 - 2
-        positions = np.repeat(initial_position, population.shape[0],axis=0)
+
+        positions = np.repeat(initial_position.copy(), population.shape[0],axis=0)
 
         for i in range(n_steps):
             # Gather inputs for 1st agent
@@ -77,7 +77,7 @@ def evaluate_population (population):
             # Get action
             velocities = population_action(population, inputs)
 
-            positions += velocities * 0.01 
+            positions += velocities * 0.05 
 
         # Now at the end, compare to formation
         positions -= np.reshape(np.mean(positions,axis=1),(population.shape[0],1,2))

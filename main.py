@@ -19,7 +19,7 @@ def mutate (genome):
     
     for i in range(n_param):
         if np.random.rand() < p_m:
-            genome[i] += np.random.rand() * 2 -1
+            genome[i] += np.random.rand() * 0.2 -0.1
 
 population = np.random.rand(n_genomes, n_param) * 2 - 1
 
