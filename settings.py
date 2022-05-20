@@ -5,7 +5,7 @@ n_genomes = 100
 n_evals = 1
 
 n_hidden = 12
-n_inputs = 4
+n_inputs = 8
 n_outputs = 2
 
 #             weights + biases + weights + biases 

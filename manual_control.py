@@ -1,12 +1,10 @@
 import numpy as np
 from settings import *
 import itertools
+from evaluation import generate_formation
 
 # Formation
-formation = np.asarray([[0,0], [1/np.sqrt(2), 1/np.sqrt(2)], [2/np.sqrt(2),0]])
-formation = np.reshape(formation, (1,3,2))
-formation -= np.reshape(np.mean(formation,axis=1),(1,1,2))
-formation = formation[0]
+formation = generate_formation()[0]
 
 # Define action
 def action (relative_positions, i):
