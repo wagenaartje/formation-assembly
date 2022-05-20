@@ -11,3 +11,4 @@ discrepancy... we can evolve afterwards. If not, super
 tough problem.
 
 --> extrapolate to larger groups!!!
+--> make relative to group velocity

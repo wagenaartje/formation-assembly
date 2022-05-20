@@ -18,10 +18,10 @@ def genome_action (genome, inputs):
 
 
 def population_action (population,inputs):
-    w1 = population[:,:n_hidden*4].reshape((population.shape[0],inputs.shape[2], n_hidden))
-    b1 = population[:,n_hidden*4:n_hidden*5].reshape((population.shape[0], 1, n_hidden))
-    w2 = population[:,n_hidden*5:n_hidden*7].reshape((population.shape[0],n_hidden, 2))
-    b2 = population[:,-2:].reshape((population.shape[0], 1, 2))
+    w1 = population[:,:n_hidden*n_inputs].reshape((population.shape[0],inputs.shape[2], n_hidden))
+    b1 = population[:,n_hidden*n_inputs:n_hidden*(n_inputs+1)].reshape((population.shape[0], 1, n_hidden))
+    w2 = population[:,n_hidden*(n_inputs+1):n_hidden*(n_inputs+1+n_outputs)].reshape((population.shape[0],n_hidden, n_outputs))
+    b2 = population[:,-n_outputs:].reshape((population.shape[0], 1, n_outputs))
 
 
     #print(inputs.shape, w1.shape, np.einsum('ijk,ikp->ijp', inputs,w1).shape)
