@@ -23,12 +23,16 @@ def population_action (population,inputs):
     w2 = population[:,n_hidden*5:n_hidden*7].reshape((population.shape[0],n_hidden, 2))
     b2 = population[:,-2:].reshape((population.shape[0], 1, 2))
 
-    z1 = np.einsum('ijk,izp->ijp', inputs,w1) + b1
+
+    #print(inputs.shape, w1.shape, np.einsum('ijk,ikp->ijp', inputs,w1).shape)
+    #print(inputs[0].dot(w1[0]))
+    #print(np.einsum('ijk,ikp->ijp', inputs,w1)[0])
+
+    z1 = np.einsum('ijk,ikp->ijp', inputs,w1) + b1
     a1 = np.tanh(z1)
 
-    z2 = np.einsum('ijk,izp->ijp', a1,w2) + b2
+    z2 = np.einsum('ijk,ikp->ijp', a1,w2) + b2
     a2 = np.tanh(z2)
-
 
     return a2
 
@@ -105,16 +109,25 @@ def evaluate_population (population):
             inputs_0 = positions[:,[1,2],:] - positions[:,[0],:]
             inputs_0 = np.reshape(inputs_0, (population.shape[0],1,(n_agents-1)*2))
 
+            #print(positions[0,:])
+            #print(inputs_0[0,:])
+
             # Gather inputs for 2nd agent
             inputs_1 = positions[:,[0,2],:] - positions[:,[1],:]
             inputs_1 = np.reshape(inputs_1, (population.shape[0],1,(n_agents-1)*2))
+
+            #print(inputs_1[0,:])
 
             # Gather inputs for 3nd agent
             inputs_2 = positions[:,[0,1],:] - positions[:,[2],:]
             inputs_2 = np.reshape(inputs_2, (population.shape[0],1,(n_agents-1)*2))
 
+            #print(inputs_2[0,:])
+
             # Concenate to 3 samples per genome
             inputs = np.concatenate((inputs_0,inputs_1,inputs_2),axis=1)
+
+            #print(inputs[0])
 
             # Get action
             velocities = population_action(population, inputs)
