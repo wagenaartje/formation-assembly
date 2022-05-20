@@ -145,7 +145,7 @@ def evaluate_population (population):
 
             fitnesses = np.where(rel_dist_diff < fitnesses, rel_dist_diff, fitnesses);
 
-        total_fitnesses = fitnesses
+        total_fitnesses += fitnesses
         old_positions[j] = positions
 
     best_positions = np.zeros((n_evals, 3, 2))
