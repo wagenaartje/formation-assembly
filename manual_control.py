@@ -4,11 +4,14 @@ import itertools
 from evaluation import generate_formation
 
 # Formation
-formation = generate_formation()[0]
+
 
 # Define action
-def action (relative_positions, i):
+def action (relative_positions, formation, i):
     permutations = list(itertools.permutations(range(n_agents),n_agents))
+
+    formation = np.concatenate(([[0,0]], formation), axis=0)
+    formation -= np.mean(formation,axis=0)
 
     best = np.inf
     best_order = None
@@ -36,7 +39,10 @@ def action (relative_positions, i):
 
     return rel_dist_diff
 
-for k in range(10):
+total_fitness = 0
+for k in range(100):
+    formation = generate_formation()[0]
+    formation -= formation[[0],:]
     # Initial position
     position = np.random.rand(n_agents,2) * 4 - 2
 
@@ -44,16 +50,16 @@ for k in range(10):
     for i in range(500):
         # Gather inputs for 1st agent
         inputs_0 = position[[1,2],:] - position[[0],:]
-        velocity_0 = action(inputs_0, 0)
+        velocity_0 = action(inputs_0, formation[[1,2],:], 0)
 
         # Gather inputs for 2nd agent
 
         inputs_1 = position[[0,2],:] - position[[1],:]
-        velocity_1 = action(inputs_1, 1)
+        velocity_1 = action(inputs_1, formation[[1,2],:], 1)
 
         # Gather inputs for 3nd agent
         inputs_2 = position[[0,1],:] - position[[2],:]
-        velocity_2 = action(inputs_2, 2)
+        velocity_2 = action(inputs_2, formation[[1,2],:],2)
 
         # Concatenate to 3 samples per genome
         velocities = np.vstack((velocity_0, velocity_1, velocity_2))
@@ -65,7 +71,7 @@ for k in range(10):
 
     # Determine and print error
     position -= np.reshape(np.mean(position,axis=0),(1,2))
-
+    formation -= np.mean(formation,axis=0)
     # Now, we have to go over all possible combinations and take the minimum
     fitness = np.inf
 
@@ -78,6 +84,9 @@ for k in range(10):
             fitness = rel_dist_diff
 
     print(fitness)
+    total_fitness += fitness
+
+print(total_fitness/100)
 
 import matplotlib.pyplot as plt
 

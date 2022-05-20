@@ -5,7 +5,7 @@ n_genomes = 100
 n_evals = 1
 
 n_hidden = 12
-n_inputs = 9
+n_inputs = 8
 n_outputs = 2
 
 #             weights + biases + weights + biases 
@@ -14,4 +14,4 @@ n_param = n_hidden*(n_inputs) + n_hidden + n_hidden * n_outputs + n_outputs
 print(n_param)
 
 p_c = 0.5 # Crossover probability
-p_m = 0.3 # Mutation probability
+p_m = 0.1 # Mutation probability
