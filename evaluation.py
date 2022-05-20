@@ -37,7 +37,7 @@ def generate_formation ():
     formation[2,:] = formation[1,:] + direction_vector
 
     formation = np.reshape(formation, (1,3,2))
-    formation -= np.reshape(np.mean(formation,axis=1),(1,1,2))
+    formation -= formation[:,[0],:]
 
     return formation
 
