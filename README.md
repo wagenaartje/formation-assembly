@@ -9,3 +9,5 @@ First thing, we can backpropagate a network on manual control,
 and then we can see if it evaluates correctly! If there is a
 discrepancy... we can evolve afterwards. If not, super
 tough problem.
+
+--> extrapolate to larger groups!!!
