@@ -21,7 +21,7 @@ def mutate (genome):
         if np.random.rand() < p_m:
             genome[i] += np.random.rand() * 0.2 -0.1
 
-population = np.random.rand(n_genomes, n_param) * 2 - 1
+population = np.random.rand(n_genomes, n_param) * 0.2 - 0.1
 
 best_genome = None
 best_fitness = np.inf

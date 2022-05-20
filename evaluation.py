@@ -91,9 +91,12 @@ def single_evaluate(population, save=False):
 
     # Now at the end, compare to formation
     positions -= np.reshape(np.mean(positions,axis=1),(population.shape[0],1,2))
+    formation -= np.reshape(np.mean(formation,axis=1),(1,1,2))
 
     # Now, we have to go over all possible combinations and take the minimum
     fitnesses = np.ones(population.shape[0]) * np.inf;
+
+    
     
     for order in permutations:
         rel_locations = positions[:,list(order),:]
