@@ -48,14 +48,56 @@ formation -= np.reshape(np.mean(formation,axis=1),(1,1,2))
 
 permutations = list(itertools.permutations(range(n_agents),n_agents))
 
-initial_position = np.random.rand(1,n_agents,2) * 4 - 2
+
+def single_evaluate(population, save=False):
+    # They start in a 2x2 area
+    initial_position = np.random.rand(1,n_agents,2) * 4 - 2
+    positions = np.repeat(initial_position.copy(), population.shape[0],axis=0)
+
+    positions_save = np.zeros((n_steps, population.shape[0], n_agents, 2))
+
+    for i in range(n_steps):
+        positions_save[i] = positions
+        # Gather inputs for 1st agent
+        inputs_0 = positions[:,[1,2],:] - positions[:,[0],:]
+        inputs_0 = np.reshape(inputs_0, (population.shape[0],1,(n_agents-1)*2))
+
+        # Gather inputs for 2nd agent
+        inputs_1 = positions[:,[0,2],:] - positions[:,[1],:]
+        inputs_1 = np.reshape(inputs_1, (population.shape[0],1,(n_agents-1)*2))
+
+        # Gather inputs for 3nd agent
+        inputs_2 = positions[:,[0,1],:] - positions[:,[2],:]
+        inputs_2 = np.reshape(inputs_2, (population.shape[0],1,(n_agents-1)*2))
+
+        # Concenate to 3 samples per genome
+        inputs = np.concatenate((inputs_0,inputs_1,inputs_2),axis=1)
+
+        # Get action
+        velocities = population_action(population, inputs)
+
+        positions += velocities * 0.05
+
+    # Now at the end, compare to formation
+    positions -= np.reshape(np.mean(positions,axis=1),(population.shape[0],1,2))
+
+    # Now, we have to go over all possible combinations and take the minimum
+    fitnesses = np.ones(population.shape[0]) * np.inf;
+    
+    for order in permutations:
+        rel_locations = positions[:,list(order),:]
+        rel_dist_diff = np.mean(np.linalg.norm(rel_locations - formation,axis=2),axis=1)
+
+        fitnesses = np.where(rel_dist_diff < fitnesses, rel_dist_diff, fitnesses);
+
+    np.save('positions_save.npy', positions_save)
 
 def evaluate_population (population):
     total_fitnesses = np.zeros(population.shape[0])
     old_positions = np.zeros((n_evals, population.shape[0], n_agents, 2))
     for j in range(n_evals):
         # They start in a 2x2 area
-
+        initial_position = np.random.rand(1,n_agents,2) * 4 - 2
         positions = np.repeat(initial_position.copy(), population.shape[0],axis=0)
 
         for i in range(n_steps):
@@ -77,7 +119,7 @@ def evaluate_population (population):
             # Get action
             velocities = population_action(population, inputs)
 
-            positions += velocities * 0.05 
+            positions += velocities * 0.05
 
         # Now at the end, compare to formation
         positions -= np.reshape(np.mean(positions,axis=1),(population.shape[0],1,2))

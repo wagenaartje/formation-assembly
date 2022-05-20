@@ -1,6 +1,6 @@
 from cv2 import absdiff
 import numpy as np
-from evaluation import evaluate_population
+from evaluation import evaluate_population, single_evaluate
 from settings import *
 import time
 
@@ -58,7 +58,8 @@ while True:
     fitness = evaluate_population(total_population)
 
     # NOTE! There is randomness, so genome will behave differently.
-    best_genome = total_population[np.argmin(fitness),:]
+    best_genome = total_population[[np.argmin(fitness)],:]
+    single_evaluate(best_genome,save=True)
 
     #if epoch - best_epoch > 5:
     #    break
