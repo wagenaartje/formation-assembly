@@ -59,7 +59,7 @@ while True:
 
     # NOTE! There is randomness, so genome will behave differently.
     best_genome = total_population[[np.argmin(fitness)],:]
-    #single_evaluate(best_genome,save=True)
+    single_evaluate(best_genome,save=True)
 
     #if epoch - best_epoch > 5:
     #    break
