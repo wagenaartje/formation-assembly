@@ -154,7 +154,7 @@ def evaluate_population (population):
     for i in range(n_evals):
         best_positions[i] = old_positions[i,np.argmin(total_fitnesses)]
 
-    np.save('best_position.npy', best_positions)
+    #np.save('best_position.npy', best_positions)
 
     total_fitnesses /= n_evals
 
