@@ -33,16 +33,16 @@ def population_action (population,inputs):
 
 def fixed_action (population, inputs):
     permutations = list(itertools.permutations(range(n_agents),n_agents))
-    formations = np.concatenate((np.reshape(inputs[:,:,(n_agents-1)*2:], (population.shape[0], n_agents, 2, 2)), np.zeros((population.shape[0], n_agents, 1, 2))),axis=2)
+    formations = np.concatenate((np.reshape(inputs[:,:,(n_agents-1)*2:], (population.shape[0], n_agents, n_agents-1, 2)), np.zeros((population.shape[0], n_agents, 1, 2))),axis=2)
     formations -= np.reshape(np.mean(formations,axis=2), (population.shape[0], n_agents, 1, 2))
     #print(formations.shape)
 
     best = np.inf
     best_order = None
 
-    relative_positions = np.reshape(inputs[:,:,:(n_agents-1)*2], (population.shape[0], n_agents, 2, 2))
+    relative_positions = np.reshape(inputs[:,:,:(n_agents-1)*2], (population.shape[0], n_agents, n_agents-1, 2))
 
-    best_diff = np.ones((population.shape[0],3)) * np.inf
+    best_diff = np.ones((population.shape[0],n_agents)) * np.inf
     best_order_index = np.zeros((population.shape[0],n_agents))
     for i in range(len(permutations)):
         order = permutations[i]
@@ -51,6 +51,7 @@ def fixed_action (population, inputs):
         formation_copy -= formation_copy[:,:,[0],:]
 
         rel_dist_diff = np.mean(np.linalg.norm(relative_positions - formation_copy[:,:,1:],axis=3),axis=2)
+
 
         best_order_index = np.where(rel_dist_diff < best_diff, np.ones((population.shape[0],n_agents)) * i, best_order_index)
         best_diff = np.where(rel_dist_diff < best_diff, rel_dist_diff, best_diff)
@@ -61,7 +62,7 @@ def fixed_action (population, inputs):
     formation_copy = np.zeros((population.shape[0], n_agents, n_agents, 2))
 
     for i in range(population.shape[0]):
-        for j in range(3):
+        for j in range(n_agents):
             formation_copy[i,j] = formations[i,j,best_orders[i,j]]
     formation_copy -= formation_copy[:,:,[0],:]
 
@@ -92,12 +93,13 @@ def generate_formation ():
 
 permutations = list(itertools.permutations(range(n_agents),n_agents))
 
+formation = generate_formation()
 
 def single_evaluate(population, save=False):
     # They start in a 2x2 area
     initial_position = np.random.rand(1,n_agents,2) * 4 - 2
     positions = np.repeat(initial_position.copy(), population.shape[0],axis=0)
-    formation = generate_formation()
+    
 
     formation_input = np.repeat(formation[:,np.arange(1,n_agents),:],population.shape[0],axis=0)
     formation_input = np.reshape(formation_input, (population.shape[0], 1,(n_agents-1)*2))
@@ -122,7 +124,7 @@ def single_evaluate(population, save=False):
             inputs = np.concatenate((inputs,inputs_0),axis=1)
             
         # Get action
-        velocities = population_action(population, inputs)
+        velocities = fixed_action(population, inputs)
         #if i == n_steps-1 and population.shape[0] > 1:print(velocities[0,:,:])
         positions += velocities * 0.05
 
