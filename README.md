@@ -11,6 +11,7 @@ tough problem.
 - Use neural networks visualization like in Croon's paper
 - Mention number of parameters, number of dimensions, ranges etc.
 - Compare to simple algorithm. Both average distance at end, plus time to certain radius!
+- Do not plot convergence best fitness, but rather the average fitness of the best genome on 100 samples or so.
 
 # EUR-FUCKING-KA
 The problem seems to be that we do not vary the number of formations enough. We should do more localized training therefore instead.
