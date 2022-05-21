@@ -13,6 +13,7 @@ tough problem.
 - Compare to simple algorithm. Both average distance at end, plus time to certain radius!
 - Do not plot convergence best fitness, but rather the average fitness of the best genome on 100 samples or so.
 - Explain the sign issue: extremely similar inputs have to result in extremely different outputs (2 agents close to each other)
+- "Asymmetric formation forming using identical agents: initial exploration"
 
 # EUR-FUCKING-KA
 The problem seems to be that we do not vary the number of formations enough. We should do more localized training therefore instead.
