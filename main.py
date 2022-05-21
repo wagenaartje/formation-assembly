@@ -19,13 +19,13 @@ def mutate (genome):
     
     for i in range(n_param):
         if np.random.rand() < p_m:
-            genome[i] += np.random.rand() * 0.2 -0.1
+            genome[i] += np.random.rand() * 0.2 - 0.1
 
 population = np.random.rand(n_genomes, n_param) * 0.2 - 0.1
 
-population = np.repeat(np.load('data/weights.npy'), n_genomes,axis=0)
-for i in range(n_genomes):
-    mutate(population[i])
+# population = np.repeat(np.load('data/weights.npy'), n_genomes,axis=0)
+# for i in range(n_genomes):
+#     mutate(population[i])
 
 best_genome = None
 best_fitness = np.inf

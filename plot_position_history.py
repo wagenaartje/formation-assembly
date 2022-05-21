@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from settings import *
 
 fig, ax = plt.subplots(1)
 formation = np.load('data/formation.npy')
@@ -14,7 +15,7 @@ print(initial_position.shape)
 position_history = np.load('data/pos_history.npy')
 position_history -= np.reshape(np.mean(position_history,axis=2),(position_history.shape[0], 1, 1, 2))
 
-for i in range(3):
+for i in range(n_agents):
     ax.plot(position_history[:,0,i,0], position_history[:,0,i,1])
 
     ax.scatter(position_history[-1,0,i,0], position_history[-1,0,i,1],c='red')
