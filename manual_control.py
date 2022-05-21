@@ -84,8 +84,8 @@ if __name__ == '__main__':
             if rel_dist_diff < fitness:
                 fitness = rel_dist_diff
 
-        print(fitness)
         total_fitness += fitness
+        print(fitness, total_fitness/(k+1))
 
     print(total_fitness/100)
 
