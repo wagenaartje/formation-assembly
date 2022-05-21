@@ -26,7 +26,7 @@ def population_action (population,inputs):
     a1 = np.tanh(z1)
 
     z2 = np.einsum('ijk,ikp->ijp', a1,w2) + b2
-    a2 = np.sign(z2)
+    a2 = np.tanh(z2)
 
 
     return a2
