@@ -4,7 +4,7 @@ n_steps = 200     # Number of movement steps to simulate
 n_genomes = 100
 n_evals = 5
 
-n_hidden = 32
+n_hidden = 64
 n_inputs = 8
 n_outputs = 2
 

@@ -48,7 +48,7 @@ if __name__ == '__main__':
         position = np.random.rand(n_agents,2) * 4 - 2
 
 
-        for i in range(500):
+        for i in range(5000):
             # Gather inputs for 1st agent
             inputs_0 = position[[1,2],:] - position[[0],:]
             velocity_0 = action(inputs_0, formation[[1,2],:], 0)
@@ -66,7 +66,7 @@ if __name__ == '__main__':
             velocities = np.vstack((velocity_0, velocity_1, velocity_2))
 
             # Get action
-            position += velocities * 0.05
+            position += velocities * 0.005
 
 
 

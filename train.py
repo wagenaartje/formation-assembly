@@ -4,6 +4,14 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 import tensorflow as tf
 
+from evaluation import single_evaluate
+
+# TEMP
+n_hidden = 64
+n_inputs = 8
+n_outputs = 2
+n_param = n_hidden*(n_inputs) + n_hidden + n_hidden * n_outputs + n_outputs
+
 
 x_data = np.load('data/x_data.npy')
 y_data = np.load('data/y_data.npy')
@@ -30,18 +38,39 @@ y_test = y_data[c:,:]
 
 
 model = tf.keras.models.Sequential()
-model.add(tf.keras.Input(shape=(8,)))
-model.add(tf.keras.layers.Dense(32, activation='tanh'))
+model.add(tf.keras.Input(shape=(n_inputs,)))
+model.add(tf.keras.layers.Dense(n_hidden, activation='tanh'))
 # Now the model will take as input arrays of shape (None, 16)
 # and output arrays of shape (None, 32).
 # Note that after the first layer, you don't need to specify
 # the size of the input anymore:
-model.add(tf.keras.layers.Dense(2, activation='tanh'))
+model.add(tf.keras.layers.Dense(n_outputs, activation='tanh'))
 
 print(x_train.shape)
 
 
 model.compile(optimizer='adam',loss='mse')
 
+
+class CustomCallback(tf.keras.callbacks.Callback):
+
+    def on_epoch_end(self, epoch, logs=None):
+        weights = model.get_weights() 
+
+        w1 = weights[0]
+        b1 = weights[1]
+        w2 = weights[2]
+        b2 = weights[3]
+
+        population = np.concatenate((w1.flatten(),b1.flatten(),w2.flatten(),b2.flatten()),axis=0)
+        population = np.reshape(population,(1,n_param))
+
+        fitness = single_evaluate(population)
+        print(fitness)
+
+
+
+
+
 print('Training starting')
-model.fit(x_train, y_train, validation_data=(x_test, y_test),epochs=1000,verbose=1)
+model.fit(x_train, y_train, validation_data=(x_test, y_test),epochs=1000,verbose=1,callbacks=[CustomCallback()])
