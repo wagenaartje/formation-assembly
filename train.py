@@ -44,4 +44,4 @@ print(x_train.shape)
 model.compile(optimizer='adam',loss='mse')
 
 print('Training starting')
-model.fit(x_train, y_train, validation_data=(x_test, y_test),epochs=100,verbose=1)
+model.fit(x_train, y_train, validation_data=(x_test, y_test),epochs=1000,verbose=1)
