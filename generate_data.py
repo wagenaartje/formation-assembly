@@ -4,8 +4,8 @@ from manual_control import action
 import itertools
 
 n_agents = 3
-n_runs_data = 20000
-n_steps = 1
+n_runs_data = 2000
+n_steps = 10
 n_inputs = 8
 n_outputs = 2
 

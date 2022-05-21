@@ -14,3 +14,13 @@ tough problem.
 
 # EUR-FUCKING-KA
 The problem seems to be that we do not vary the number of formations enough. We should do more localized training therefore instead.
+
+Resulting plan
+- Train for far less steps, and evaluate fitness **improval** instead. 
+- Do many evaluations per epoch. Every evaluation = one more formation changed
+
+We can also look how we can combine inputs. so that we can keep number of evaluations low and
+focus on long term behavior to beat the simple algorithm.
+
+Notes:
+- If no formation is given in inputs, they will all home to the same location so that relative distances become zero.

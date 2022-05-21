@@ -6,6 +6,19 @@ formation = np.load('data/formation.npy')
 formation -= np.reshape(np.mean(formation,axis=1), (1,1,2))
 ax.scatter(formation[0,:,0], formation[0,:,1])
 
+formation = np.load('data/formation_input.npy')
+formation = np.reshape(formation, (1,3,2))
+#formation_0 = np.reshape(np.asarray([0,0]) ,(1,1,2))
+#formation = np.concatenate((formation_0, formation),axis=1)
+#formation -= np.reshape(np.mean(formation,axis=1), (1,1,2))
+ax.scatter(formation[0,:,0], formation[0,:,1])
+
+inputs = np.load('data/inputs.npy')
+inputs = np.reshape(inputs[:,:,:4], (3,2,2))
+
+for i in range(3):
+    ax.scatter(inputs[i,:,0], inputs[i,:,1],c='k')
+
 initial_position = np.load('data/init_pos.npy')
 initial_position -= np.reshape(np.mean(initial_position,axis=1), (1,1,2))
 ax.scatter(initial_position[0,:,0], initial_position[0,:,1])
