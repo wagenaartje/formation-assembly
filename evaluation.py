@@ -111,22 +111,21 @@ def single_evaluate(population, save=False):
         np.save('data/init_pos.npy', initial_position)
         position_history = np.zeros((n_steps, population.shape[0], n_agents, 2))
 
-    ones = np.ones((population.shape[0],1,1))
     for i in range(n_steps):
         # Gather inputs for 1st agent
         inputs_0 = positions[:,[1,2],:] - positions[:,[0],:]
         inputs_0 = np.reshape(inputs_0, (population.shape[0],1,4))
-        inputs_0 = np.concatenate((inputs_0, formation_input, ones* 0), axis=2)
+        inputs_0 = np.concatenate((inputs_0, formation_input), axis=2)
 
         # Gather inputs for 2nd agent
-        inputs_1 = positions[:,[0,2],:] - positions[:,[1],:]
+        inputs_1 = positions[:,[2,0],:] - positions[:,[1],:]
         inputs_1 = np.reshape(inputs_1, (population.shape[0],1,4))
-        inputs_1 = np.concatenate((inputs_1, formation_input, ones*2), axis=2)
+        inputs_1 = np.concatenate((inputs_1, formation_input), axis=2)
 
         # Gather inputs for 3nd agent
         inputs_2 = positions[:,[0,1],:] - positions[:,[2],:]
         inputs_2 = np.reshape(inputs_2, (population.shape[0],1,4))
-        inputs_2 = np.concatenate((inputs_2, formation_input, ones*3), axis=2)
+        inputs_2 = np.concatenate((inputs_2, formation_input), axis=2)
 
         # Concenate to 3 samples per genome
         inputs = np.concatenate((inputs_0,inputs_1,inputs_2),axis=1)
@@ -134,7 +133,7 @@ def single_evaluate(population, save=False):
         # Get action
         velocities = population_action(population, inputs)
 
-        positions += velocities * 0.1
+        positions += velocities * 0.05
 
         if save:
             position_history[i] = positions
