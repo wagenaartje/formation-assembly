@@ -124,7 +124,7 @@ def single_evaluate(population, save=False):
             inputs = np.concatenate((inputs,inputs_0),axis=1)
             
         # Get action
-        velocities = fixed_action(population, inputs)
+        velocities = population_action(population, inputs)
         #if i == n_steps-1 and population.shape[0] > 1:print(velocities[0,:,:])
         positions += velocities * 0.05
 
