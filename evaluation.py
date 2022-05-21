@@ -26,7 +26,7 @@ def population_action (population,inputs):
     a1 = np.tanh(z1)
 
     z2 = np.einsum('ijk,ikp->ijp', a1,w2) + b2
-    a2 = np.tanh(z2)
+    a2 = np.sign(z2)
 
 
     return a2
@@ -98,30 +98,20 @@ permutations = list(itertools.permutations(range(n_agents),n_agents))
 
 
 def single_evaluate(population, save=False):
-    local_steps = n_steps
-    if save: local_steps = 200
-
     # They start in a 2x2 area
     initial_position = np.random.rand(1,n_agents,2) * 4 - 2
-    positions = np.random.rand(population.shape[0], 3,2)
-    positions -= np.reshape(np.mean(positions,axis=1),(population.shape[0],1,2))
+    positions = np.repeat(initial_position.copy(), population.shape[0],axis=0)
+    formation = generate_formation()
 
-    formation_input = np.random.rand(population.shape[0], 3,2)
-
-    ### STARTING FITNESS
-    
-    formation_c = formation_input - np.reshape(np.mean(formation_input,axis=1),(population.shape[0],1,2))
-
-    formation_input = np.reshape(formation_input, (population.shape[0], 1,6))
-
+    formation_input = np.repeat(formation[:,[1,2],:],population.shape[0],axis=0)
+    formation_input = np.reshape(formation_input, (population.shape[0], 1,4))
 
     if save:
-        #np.save('data/formation.npy', formation)
+        np.save('data/formation.npy', formation)
         np.save('data/init_pos.npy', initial_position)
-        position_history = np.zeros((local_steps, population.shape[0], n_agents, 2))
-        np.save('data/formation_input.npy', formation_input[0])
+        position_history = np.zeros((n_steps, population.shape[0], n_agents, 2))
 
-    for i in range(local_steps):
+    for i in range(n_steps):
         # Gather inputs for 1st agent
         inputs_0 = positions[:,[1,2],:] - positions[:,[0],:]
         inputs_0 = np.reshape(inputs_0, (population.shape[0],1,4))
@@ -150,11 +140,10 @@ def single_evaluate(population, save=False):
 
     if save:
         np.save('data/pos_history.npy', position_history)
-        np.save('data/inputs.npy', inputs)
 
     # Now at the end, compare to formation
     positions -= np.reshape(np.mean(positions,axis=1),(population.shape[0],1,2))
-
+    formation_c = formation - np.reshape(np.mean(formation,axis=1),(1,1,2))
 
     # Now, we have to go over all possible combinations and take the minimum
     fitnesses = np.ones(population.shape[0]) * np.inf;
@@ -166,8 +155,6 @@ def single_evaluate(population, save=False):
         rel_dist_diff = np.mean(np.linalg.norm(rel_locations - formation_c,axis=2),axis=1)
 
         fitnesses = np.where(rel_dist_diff < fitnesses, rel_dist_diff, fitnesses);
-
-    if save: print(fitnesses)
 
     return fitnesses
 
