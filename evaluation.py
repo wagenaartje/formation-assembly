@@ -123,12 +123,11 @@ def single_evaluate(population, save=False):
             
         # Get action
         velocities = population_action(population, inputs)
-
+        #if i == n_steps-1 and population.shape[0] > 1:print(velocities[0,:,:])
         positions += velocities * 0.05
 
         if save:
             position_history[i] = positions
-
     if save:
         np.save('data/pos_history.npy', position_history)
 

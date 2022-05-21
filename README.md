@@ -17,3 +17,7 @@ The problem seems to be that we do not vary the number of formations enough. We 
 
 So we cannot seem to bypass a very strong local minima, somehow. So can we just do the following: see if we can beat the 
 simple algorithm using a pre-trained network? IT DOES!!! It goes to about 0.05, which is the best we can  do? not with sign...
+
+# Create MWE example, and post. Ask why not working?
+
+# Do fixed formation, for many agents.
