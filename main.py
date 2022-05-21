@@ -23,6 +23,10 @@ def mutate (genome):
 
 population = np.random.rand(n_genomes, n_param) * 0.2 - 0.1
 
+population = np.repeat(np.load('data/weights.npy'), n_genomes,axis=0)
+for i in range(n_genomes):
+    mutate(population[i])
+
 best_genome = None
 best_fitness = np.inf
 best_epoch = None

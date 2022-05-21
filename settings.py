@@ -2,7 +2,7 @@ n_size = 4        # Size of the world (number of cells)
 n_agents = 3     # Number of agents in the world
 n_steps = 200     # Number of movement steps to simulate
 n_genomes = 100
-n_evals = 5
+n_evals = 10
 
 n_hidden = 64
 n_inputs = 8

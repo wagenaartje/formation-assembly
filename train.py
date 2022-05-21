@@ -66,6 +66,7 @@ class CustomCallback(tf.keras.callbacks.Callback):
         population = np.reshape(population,(1,n_param))
 
         fitness = single_evaluate(population)
+        np.save('data/weights.npy', population)
         print(fitness)
 
 
