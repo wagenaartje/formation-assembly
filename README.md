@@ -24,3 +24,10 @@ simple algorithm using a pre-trained network? IT DOES!!! It goes to about 0.05, 
 # Create MWE example, and post. Ask why not working?
 
 # Do fixed formation, for many agents.
+
+# LAST PRIORITY:
+- Investigate what causes simple algorithm to fail. 
+-> identify issue, if possible, adapt input of neural network.
+-> if issue is unsolvable, forget about it.
+
+- also explain why standing still is not an option for the agents. which one is going to stand still?
