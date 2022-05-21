@@ -14,11 +14,11 @@ c = int(x_data.shape[0] * 0.8)
 
 # NOTE! If we don't shuffle, we get extremely bad performance because we do not train on enough formations. 
 # THIS IS A KEY FINDING.
-index = np.arange(x_data.shape[0])
-np.random.shuffle(index)
+# index = np.arange(x_data.shape[0])
+# np.random.shuffle(index)
 
-x_data = x_data[index,:]
-y_data = y_data[index,:]
+# x_data = x_data[index,:]
+# y_data = y_data[index,:]
 
 x_train = x_data[:c,:]
 y_train = y_data[:c,:]
