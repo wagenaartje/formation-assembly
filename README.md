@@ -31,3 +31,6 @@ simple algorithm using a pre-trained network? IT DOES!!! It goes to about 0.05, 
 -> if issue is unsolvable, forget about it.
 
 - also explain why standing still is not an option for the agents. which one is going to stand still?
+
+# You can define a different simple solution: plot in mean frame, let each one go to a target. optimize so that
+# maximum path length is shortest. it's a simple assignment problem. this is also how we could solve it.
