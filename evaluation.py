@@ -75,6 +75,7 @@ def fixed_action (population, inputs):
     return rel_dist_diff
 
 
+
         
 def generate_formation ():
     formation = np.zeros((n_agents, 2))
@@ -94,6 +95,10 @@ def generate_formation ():
 permutations = list(itertools.permutations(range(n_agents),n_agents))
 
 formation = generate_formation()
+
+book = [1]
+
+best_genome = None
 
 def single_evaluate(population, save=False):
     # They start in a 2x2 area
@@ -146,11 +151,12 @@ def single_evaluate(population, save=False):
         rel_locations = positions[:,list(order),:]
         rel_dist_diff = np.mean(np.linalg.norm(rel_locations - formation_c,axis=2),axis=1)
 
-        fitnesses = np.where(rel_dist_diff < fitnesses, rel_dist_diff, fitnesses);
+        fitnesses = np.where(rel_dist_diff < fitnesses, rel_dist_diff, fitnesses)
 
     return fitnesses
 
 def evaluate_population (population):
+    global book, best_genome
     total_fitnesses = np.zeros(population.shape[0])
 
     for j in range(n_evals):
@@ -158,5 +164,19 @@ def evaluate_population (population):
         total_fitnesses += fitnesses
 
     total_fitnesses /= n_evals
+
+    old_old_fitnesses = total_fitnesses.copy()
+    total_fitnesses = np.clip(total_fitnesses,0,1)
+    old_fitnesses = total_fitnesses.copy()
+    for i in range(population.shape[0]):
+        total_fitnesses[i] = -np.min(np.abs(np.asarray(book) - total_fitnesses[i]))
+
+    if np.min(old_old_fitnesses) < np.min(book):
+        best_genome = population[[np.argmin(old_old_fitnesses)],:]
+        single_evaluate(best_genome,save=True)
+
+    book = book + list(old_fitnesses)
+    print(np.min(book), np.mean(old_old_fitnesses))
+
 
     return total_fitnesses
