@@ -35,3 +35,6 @@ simple algorithm using a pre-trained network? IT DOES!!! It goes to about 0.05, 
 
 # You can define a different simple solution: plot in mean frame, let each one go to a target. optimize so that
 # maximum path length is shortest. it's a simple assignment problem. this is also how we could solve it.
+
+# Breakthrough? I think if we properly define novelty search, we will get some breaktrhough
+BREAKTHROUGH CONFIRMED
