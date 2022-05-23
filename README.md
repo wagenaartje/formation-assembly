@@ -15,6 +15,8 @@ tough problem.
 - Explain the sign issue: extremely similar inputs have to result in extremely different outputs (2 agents close to each other)
 - "Asymmetric formation forming using identical agents: initial exploration"
 - Sowieso assignment op novelty search doen. Proberen te combineren met CMA-ES: going in direction of novelty!
+- Novelty search will automatically go to unexplored areas, naturally the high-fitness areas. However, once saturated, it will
+  drift away from possible local minima!
 
 # EUR-FUCKING-KA
 The problem seems to be that we do not vary the number of formations enough. We should do more localized training therefore instead.
@@ -38,3 +40,23 @@ simple algorithm using a pre-trained network? IT DOES!!! It goes to about 0.05, 
 
 # Breakthrough? I think if we properly define novelty search, we will get some breaktrhough
 BREAKTHROUGH CONFIRMED
+
+# Wat echt ziek zou zijn:
+een fixed spead constrained, met maximum curvature. dan komen we echt op airbus domain.
+
+- note!! the archive is becoming way too large currently, causing the code to slow down
+  tremendously.
+
+--> probably the best approach: novelty search on distance -> normal ga on distance minima -> novelty search on time -> normal ga on time minima
+
+
+But step 1 would be to clean/comment the code, some optimizing, and doing multiple run averaging. Then we can tweak algorithm to get desired behaviour,
+noting what and why stuff is changed in progress. 
+
+Tweak examples:
+- Compare DE / CMA-ES / NSGA to own approach
+- Change archiving method
+
+Then at last, we can see for how many agents we can do this. 
+
+**THE MAIN ADVANTAGE: SIMPLE METHODS REQUIRE COMBINATORIAL OPTIMIZATION, DOES OUR METHOD PERFORM BETTER FOR A LARGE NUMBER OF AGENTS??**
