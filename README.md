@@ -17,6 +17,7 @@ tough problem.
 - Sowieso assignment op novelty search doen. Proberen te combineren met CMA-ES: going in direction of novelty!
 - Novelty search will automatically go to unexplored areas, naturally the high-fitness areas. However, once saturated, it will
   drift away from possible local minima!
+- Maak een plaatje met een fixed formation, en visualiseer de paths vanuit verschillende random startpunten. Of met heat maps, of a la monte carlo bij Airbus. Kleur de paths met zelfde eindpunt hetzelfde. Je zal dan een soort duidelijke splitting moeten zien?
 
 # EUR-FUCKING-KA
 The problem seems to be that we do not vary the number of formations enough. We should do more localized training therefore instead.
@@ -49,6 +50,7 @@ een fixed spead constrained, met maximum curvature. dan komen we echt op airbus 
 
 --> probably the best approach: novelty search on distance -> normal ga on distance minima -> novelty search on time -> normal ga on time minima
 **or both at once: we define a distance and time function, so we have a 2d behavior space**
+-> We could also let the time be the time until the minimum value was reached. Then we can also define it for poor distances!
 
 
 But step 1 would be to clean/comment the code, some optimizing, and doing multiple run averaging. Then we can tweak algorithm to get desired behaviour,
@@ -61,3 +63,5 @@ Tweak examples:
 Then at last, we can see for how many agents we can do this. 
 
 **THE MAIN ADVANTAGE: SIMPLE METHODS REQUIRE COMBINATORIAL OPTIMIZATION, DOES OUR METHOD PERFORM BETTER FOR A LARGE NUMBER OF AGENTS??**
+
+
