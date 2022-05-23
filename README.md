@@ -48,6 +48,7 @@ een fixed spead constrained, met maximum curvature. dan komen we echt op airbus 
   tremendously.
 
 --> probably the best approach: novelty search on distance -> normal ga on distance minima -> novelty search on time -> normal ga on time minima
+**or both at once: we define a distance and time function, so we have a 2d behavior space**
 
 
 But step 1 would be to clean/comment the code, some optimizing, and doing multiple run averaging. Then we can tweak algorithm to get desired behaviour,
