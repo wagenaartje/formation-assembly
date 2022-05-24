@@ -85,7 +85,7 @@ while True:
 
     
     population = new_population
-    print('Best score:', np.min(fitness), np.mean(fitnesses), time.time() - start_time, 's')
+    print(epoch, 'Best score:', np.min(fitness), np.mean(fitnesses), time.time() - start_time, 's')
     time.sleep(0.01) # for ctrl+c
     epoch += 1
     start_time = time.time()

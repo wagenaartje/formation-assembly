@@ -96,7 +96,7 @@ permutations = list(itertools.permutations(range(n_agents),n_agents))
 
 
 
-archive = [1]
+archive = [[1,1,1]]
 
 best_genome = None
 
@@ -143,7 +143,8 @@ def single_evaluate(population, save=False):
     formation_c = formation - np.reshape(np.mean(formation,axis=1),(1,1,2))
 
     # Now, we have to go over all possible combinations and take the minimum
-    fitnesses = np.ones(population.shape[0]) * np.inf;
+    behavior = np.ones((population.shape[0],3)) * np.inf;
+    best_diff = np.ones(population.shape[0]) * np.inf
 
     
     
@@ -151,41 +152,58 @@ def single_evaluate(population, save=False):
         rel_locations = positions[:,list(order),:]
         rel_dist_diff = np.mean(np.linalg.norm(rel_locations - formation_c,axis=2),axis=1)
 
-        fitnesses = np.where(rel_dist_diff < fitnesses, rel_dist_diff, fitnesses)
+        new_behavior = np.max(np.abs(rel_locations - formation_c),axis=1)
+        new_behavior = np.concatenate((new_behavior, np.reshape(rel_dist_diff,(population.shape[0],1))), axis=1)
+        
+        comparison = rel_dist_diff < best_diff
+        comparison = np.reshape(comparison, (population.shape[0], 1))
+        comparison = np.repeat(comparison,3,axis=1)
 
-    return fitnesses
+        behavior = np.where(comparison, new_behavior, behavior)
+        best_diff = np.where(rel_dist_diff < best_diff, rel_dist_diff, best_diff)
 
+    return behavior, best_diff
+
+best_fitness = np.inf
 def evaluate_population (population):
-    global archive, best_genome
-    total_fitnesses = np.zeros(population.shape[0])
+    global archive, best_genome, best_fitness
+
+    ''' Get behavior '''
+    average_behavior = np.zeros((population.shape[0],3))
+    fitnesses = np.zeros(population.shape[0])
+
 
     for j in range(n_evals):
-        fitnesses = single_evaluate(population)
-        total_fitnesses += fitnesses
+        behavior, fitness  = single_evaluate(population)
+        average_behavior += behavior
+        fitnesses += fitness
 
-    total_fitnesses /= n_evals
+    average_behavior /= n_evals
+    fitnesses /= n_evals
 
-    old_old_fitnesses = total_fitnesses.copy()
-    total_fitnesses = np.clip(total_fitnesses,0,1)
-    old_fitnesses = total_fitnesses.copy()
-
-    final_fitness = np.zeros(total_fitnesses.shape)
+    average_behavior = np.clip(average_behavior,0,1)
+    novelty = np.zeros(population.shape[0])
 
     for i in range(population.shape[0]):
-        #all_others = np.concatenate((archive, total_fitnesses[:i], total_fitnesses[i+1:]))
-        distances = np.abs(archive - total_fitnesses[i])
+        # But this is weird. If we have multiple novel but identical individuals...
+        all_others = np.concatenate((archive, average_behavior[:i], average_behavior[i+1:]))
+
+        distances = np.abs(np.linalg.norm(all_others - average_behavior[i],axis=1))
         distances = np.sort(distances)
 
-        k = 1
+        k = 10
         minimum_distances = distances[:k]
-        final_fitness[i] = - np.mean(minimum_distances)
+        novelty[i] = - np.mean(minimum_distances)
 
-    if np.min(old_old_fitnesses) < np.min(archive):
-        best_genome = population[[np.argmin(old_old_fitnesses)],:]
+    if np.min(fitnesses) < best_fitness:
+        best_fitness = np.min(fitnesses)
+        best_genome = population[[np.argmin(fitnesses)],:]
+
     single_evaluate(best_genome,save=True)
 
-    archive = archive + list(old_fitnesses)
-    print(np.min(archive), np.mean(old_old_fitnesses))
+    archive = archive + list(average_behavior[novelty < -0.01 ])
+
+    print(best_fitness, np.mean(average_behavior,axis=0), len(archive))
 
 
-    return final_fitness
+    return novelty
