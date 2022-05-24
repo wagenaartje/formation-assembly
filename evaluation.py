@@ -96,7 +96,7 @@ permutations = list(itertools.permutations(range(n_agents),n_agents))
 
 formation = generate_formation()
 
-book = [1]
+archive = [1]
 
 best_genome = None
 
@@ -156,7 +156,7 @@ def single_evaluate(population, save=False):
     return fitnesses
 
 def evaluate_population (population):
-    global book, best_genome
+    global archive, best_genome
     total_fitnesses = np.zeros(population.shape[0])
 
     for j in range(n_evals):
@@ -168,15 +168,24 @@ def evaluate_population (population):
     old_old_fitnesses = total_fitnesses.copy()
     total_fitnesses = np.clip(total_fitnesses,0,1)
     old_fitnesses = total_fitnesses.copy()
-    for i in range(population.shape[0]):
-        total_fitnesses[i] = -np.min(np.abs(np.asarray(book) - total_fitnesses[i]))
 
-    if np.min(old_old_fitnesses) < np.min(book):
+    final_fitness = np.zeros(total_fitnesses.shape)
+
+    for i in range(population.shape[0]):
+        #all_others = np.concatenate((archive, total_fitnesses[:i], total_fitnesses[i+1:]))
+        distances = np.abs(archive - total_fitnesses[i])
+        distances = np.sort(distances)
+
+        k = 1
+        minimum_distances = distances[:k]
+        final_fitness[i] = - np.mean(minimum_distances)
+
+    if np.min(old_old_fitnesses) < np.min(archive):
         best_genome = population[[np.argmin(old_old_fitnesses)],:]
         single_evaluate(best_genome,save=True)
 
-    book = book + list(old_fitnesses)
-    print(np.min(book), np.mean(old_old_fitnesses))
+    archive = archive + list(old_fitnesses)
+    print(np.min(archive), np.mean(old_old_fitnesses))
 
 
-    return total_fitnesses
+    return final_fitness
