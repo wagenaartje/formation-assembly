@@ -94,7 +94,7 @@ def generate_formation ():
 
 permutations = list(itertools.permutations(range(n_agents),n_agents))
 
-formation = generate_formation()
+
 
 archive = [1]
 
@@ -105,7 +105,7 @@ def single_evaluate(population, save=False):
     initial_position = np.random.rand(1,n_agents,2) * 4 - 2
     positions = np.repeat(initial_position.copy(), population.shape[0],axis=0)
     
-
+    formation = generate_formation()
     formation_input = np.repeat(formation[:,np.arange(1,n_agents),:],population.shape[0],axis=0)
     formation_input = np.reshape(formation_input, (population.shape[0], 1,(n_agents-1)*2))
 
@@ -182,7 +182,7 @@ def evaluate_population (population):
 
     if np.min(old_old_fitnesses) < np.min(archive):
         best_genome = population[[np.argmin(old_old_fitnesses)],:]
-        single_evaluate(best_genome,save=True)
+    single_evaluate(best_genome,save=True)
 
     archive = archive + list(old_fitnesses)
     print(np.min(archive), np.mean(old_old_fitnesses))
