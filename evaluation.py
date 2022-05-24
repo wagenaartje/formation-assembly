@@ -96,7 +96,7 @@ permutations = list(itertools.permutations(range(n_agents),n_agents))
 
 
 
-archive = [[1,1,1]]
+archive = [[1,1]]
 
 best_genome = None
 
@@ -113,6 +113,11 @@ def single_evaluate(population, save=False):
         np.save('data/formation.npy', formation)
         np.save('data/init_pos.npy', initial_position)
         position_history = np.zeros((n_steps, population.shape[0], n_agents, 2))
+
+    # Now, we have to go over all possible combinations and take the minimum
+    behavior = np.ones((population.shape[0],2)) * np.inf;
+    best_diff = np.ones((population.shape[0],1)) * np.inf
+    time_diff = np.ones((population.shape[0],1)) * np.inf
 
     for i in range(n_steps):
         inputs = np.zeros((population.shape[0],0,n_inputs))
@@ -135,41 +140,37 @@ def single_evaluate(population, save=False):
 
         if save:
             position_history[i] = positions
+
+
+        # Now at the end, compare to formation
+        positions_c = positions.copy() - np.reshape(np.mean(positions,axis=1),(population.shape[0],1,2))
+        formation_c = formation - np.reshape(np.mean(formation,axis=1),(1,1,2))
+
+        for order in permutations:
+            rel_locations = positions_c[:,list(order),:]
+            rel_dist_diff = np.mean(np.linalg.norm(rel_locations - formation_c,axis=2),axis=1)
+            rel_dist_diff = np.reshape(rel_dist_diff, (population.shape[0],1))
+
+            time_diff = np.where(rel_dist_diff < best_diff, np.ones((population.shape[0],1)) * i/n_steps, time_diff)
+            best_diff = np.where(rel_dist_diff < best_diff, rel_dist_diff, best_diff)
     if save:
         np.save('data/pos_history.npy', position_history)
 
-    # Now at the end, compare to formation
-    positions -= np.reshape(np.mean(positions,axis=1),(population.shape[0],1,2))
-    formation_c = formation - np.reshape(np.mean(formation,axis=1),(1,1,2))
-
-    # Now, we have to go over all possible combinations and take the minimum
-    behavior = np.ones((population.shape[0],3)) * np.inf;
-    best_diff = np.ones(population.shape[0]) * np.inf
 
     
     
-    for order in permutations:
-        rel_locations = positions[:,list(order),:]
-        rel_dist_diff = np.mean(np.linalg.norm(rel_locations - formation_c,axis=2),axis=1)
+    behavior = np.concatenate((best_diff, time_diff),axis=1)
+    behavior = np.clip(behavior,0,1)
 
-        new_behavior = np.max(np.abs(rel_locations - formation_c),axis=1)
-        new_behavior = np.concatenate((new_behavior, np.reshape(rel_dist_diff,(population.shape[0],1))), axis=1)
-        
-        comparison = rel_dist_diff < best_diff
-        comparison = np.reshape(comparison, (population.shape[0], 1))
-        comparison = np.repeat(comparison,3,axis=1)
 
-        behavior = np.where(comparison, new_behavior, behavior)
-        best_diff = np.where(rel_dist_diff < best_diff, rel_dist_diff, best_diff)
-
-    return behavior, best_diff
+    return behavior, best_diff[:,0]
 
 best_fitness = np.inf
 def evaluate_population (population):
     global archive, best_genome, best_fitness
 
     ''' Get behavior '''
-    average_behavior = np.zeros((population.shape[0],3))
+    average_behavior = np.zeros((population.shape[0],2))
     fitnesses = np.zeros(population.shape[0])
 
 
@@ -181,7 +182,6 @@ def evaluate_population (population):
     average_behavior /= n_evals
     fitnesses /= n_evals
 
-    average_behavior = np.clip(average_behavior,0,1)
     novelty = np.zeros(population.shape[0])
 
     for i in range(population.shape[0]):
@@ -191,7 +191,7 @@ def evaluate_population (population):
         distances = np.abs(np.linalg.norm(all_others - average_behavior[i],axis=1))
         distances = np.sort(distances)
 
-        k = 10
+        k = 1
         minimum_distances = distances[:k]
         novelty[i] = - np.mean(minimum_distances)
 
@@ -204,6 +204,8 @@ def evaluate_population (population):
     archive = archive + list(average_behavior[novelty < -0.01 ])
 
     print(best_fitness, np.mean(average_behavior,axis=0), len(archive))
+
+    np.save('archive.npy', np.asarray(archive))
 
 
     return novelty

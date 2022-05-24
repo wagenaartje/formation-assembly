@@ -69,3 +69,6 @@ Then at last, we can see for how many agents we can do this.
 **THE MAIN ADVANTAGE: SIMPLE METHODS REQUIRE COMBINATORIAL OPTIMIZATION, DOES OUR METHOD PERFORM BETTER FOR A LARGE NUMBER OF AGENTS??**
 
 
+DEFINE 2D BEHAVIOR METRIC
+1 axis: mean distance to target
+2nd axis: mean mutual distance
