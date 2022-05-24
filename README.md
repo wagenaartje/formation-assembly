@@ -18,6 +18,10 @@ tough problem.
 - Novelty search will automatically go to unexplored areas, naturally the high-fitness areas. However, once saturated, it will
   drift away from possible local minima!
 - Maak een plaatje met een fixed formation, en visualiseer de paths vanuit verschillende random startpunten. Of met heat maps, of a la monte carlo bij Airbus. Kleur de paths met zelfde eindpunt hetzelfde. Je zal dan een soort duidelijke splitting moeten zien?
+- Kopieer Guido's paper format, although it may seem a bit weird...
+- Make velocity plots, when 2 agents are kept at same position. What local minima appear?
+- Mention perception / proprioception
+- do thousands of simulations on the final best individuals
 
 # EUR-FUCKING-KA
 The problem seems to be that we do not vary the number of formations enough. We should do more localized training therefore instead.
