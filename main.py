@@ -1,3 +1,4 @@
+from cv2 import absdiff
 import numpy as np
 from evaluation import evaluate_population, single_evaluate
 from settings import *

@@ -14,7 +14,7 @@ colors = cmap(np.arange(archive.shape[0])/archive.shape[0])
 plt.scatter(archive[:,0], archive[:,1],10,c=colors)
 
 plt.xlabel('Minimum dist')
-plt.ylabel('Radius')
+plt.ylabel('Time')
 plt.legend()
 
 plt.show()
