@@ -23,7 +23,7 @@ def population_action (population,inputs):
     #print(w1.shape,inputs.shape,b1.shape)
     #print(np.tanh(np.dot(np.tanh(inputs[0][0].dot(w1[0])+b1[0]), w2[0]) + b2[0]))
     #print(z2[0][0])
-    a1 = np.tanh(z1)
+    a1 = z1 * (z1 > 0)
 
     z2 = np.einsum('ijk,ikp->ijp', a1,w2) + b2
     a2 = np.tanh(z2)
