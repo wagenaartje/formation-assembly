@@ -72,3 +72,5 @@ Then at last, we can see for how many agents we can do this.
 DEFINE 2D BEHAVIOR METRIC
 1 axis: mean distance to target
 2nd axis: mean mutual distance
+
+it looks like arbitrary formation won't work. so start focusing on single formation, and train a cool behavior (distance vs collision constraint!)
