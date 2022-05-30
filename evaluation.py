@@ -23,7 +23,7 @@ def population_action (population: np.ndarray, inputs: np.ndarray) -> np.ndarray
 
 permutations = list(itertools.permutations(range(n_agents),n_agents))
 
-def single_evaluate(population: np.ndarray, loops: int, lt_fitness: bool = False) -> np.ndarray:
+def single_evaluate(population: np.ndarray, loops: int, lt_fitness: bool = False, save: bool = False) -> np.ndarray:
     ''' Calculates the fitness of each genome in the population on a single evaluation'''
 
     # Initialize random initial positions and formations
@@ -44,6 +44,9 @@ def single_evaluate(population: np.ndarray, loops: int, lt_fitness: bool = False
 
         old_best_diff = np.where(rel_dist_diff < old_best_diff, rel_dist_diff, old_best_diff) 
 
+    # If save=true, log the position history
+    if save: position_history = np.zeros((loops, population.shape[0], 3, 2))
+
 
     # Now, we have to go over all possible combinations and take the minimum
     for i in range(loops):
@@ -52,6 +55,8 @@ def single_evaluate(population: np.ndarray, loops: int, lt_fitness: bool = False
         # NOTE! We must keep this here, since we subtract formation_input and positions later.
         positions -= np.mean(positions,axis=1,keepdims=True)
         formation_input -= np.mean(formation_input,axis=1,keepdims=True)
+
+        if save: position_history[i] = positions.copy()
 
         for j in range(n_agents):
             # Gather inputs for 1st agent
@@ -76,6 +81,8 @@ def single_evaluate(population: np.ndarray, loops: int, lt_fitness: bool = False
         velocities = population_action(population, inputs)
         positions += velocities * 0.05
 
+        
+
 
     # Now at the end, compare to formation
     positions_c = positions.copy() - np.reshape(np.mean(positions,axis=1),(population.shape[0],1,2))
@@ -92,6 +99,12 @@ def single_evaluate(population: np.ndarray, loops: int, lt_fitness: bool = False
         fitness = -(old_best_diff - best_diff)
     else:
         fitness = -best_diff
+        
+    # If save=True, save initial position, formation, and path
+    if save:
+        np.save('./output/initial_position.npy', initial_position)
+        np.save('./output/formation.npy', formation)
+        np.save('./output/position_history.npy', position_history)
 
     return fitness
 

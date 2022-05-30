@@ -28,9 +28,6 @@ genome_file = open('./output/genome.dat',mode='wb+')
 population = np.random.rand(n_genomes, n_param) * 1 - 0.5
 
 # Initialize loop variables
-best_genome = None
-best_fitness = np.inf
-lt_fitness = None
 epoch = 1
 start_time = time.time()
 
@@ -65,13 +62,10 @@ while True:
     fitness = evaluate_population(total_population,n_steps)
 
     # Save the best genome and fitness
-    new_best_fitness = np.min(fitness)
-    new_best_fitness.tofile(fitness_file)
+    best_fitness = np.min(fitness)
+    best_fitness.tofile(fitness_file)
 
-    if new_best_fitness < best_fitness:
-        best_fitness = new_best_fitness
-        best_genome  = total_population[[np.argmin(fitness)],:]
-
+    best_genome  = total_population[[np.argmin(fitness)],:]
     best_genome.tofile(genome_file)
     
     # Tournaments selection
