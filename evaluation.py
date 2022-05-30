@@ -23,7 +23,7 @@ def population_action (population,inputs):
     #print(w1.shape,inputs.shape,b1.shape)
     #print(np.tanh(np.dot(np.tanh(inputs[0][0].dot(w1[0])+b1[0]), w2[0]) + b2[0]))
     #print(z2[0][0])
-    a1 = z1 * (z1 > 0)
+    a1 = np.tanh(z1)
 
     z2 = np.einsum('ijk,ikp->ijp', a1,w2) + b2
     a2 = np.tanh(z2)
@@ -78,6 +78,7 @@ def fixed_action (population, inputs):
 
         
 def generate_formation ():
+    return np.random.rand(1,n_agents, 2) * 2 - 1
     formation = np.zeros((n_agents, 2))
 
     for j in range(1,n_agents):
@@ -100,39 +101,69 @@ archive = [[1,1]]
 
 best_genome = None
 
-def single_evaluate(population, save=False):
+
+def single_evaluate(population, save, loops):
     # They start in a 2x2 area
     initial_position = np.random.rand(1,n_agents,2) * 4 - 2
     positions = np.repeat(initial_position.copy(), population.shape[0],axis=0)
     
-    formation = generate_formation()
-    formation_input = np.repeat(formation[:,np.arange(1,n_agents),:],population.shape[0],axis=0)
-    formation_input = np.reshape(formation_input, (population.shape[0], 1,(n_agents-1)*2))
+    formation = np.random.rand(1,n_agents, 2) * 4 - 2
+    formation_input = np.repeat(formation.copy(),population.shape[0],axis=0)
+    formation_input = np.reshape(formation_input, (population.shape[0], 1,n_agents*2))
 
     if save:
         np.save('data/formation.npy', formation)
         np.save('data/init_pos.npy', initial_position)
-        position_history = np.zeros((n_steps, population.shape[0], n_agents, 2))
+        position_history = np.zeros((loops, population.shape[0], n_agents, 2))
+        formation_history = np.zeros((loops, 1, n_agents, 2))
+
+    # Now at the end, compare to formation
+    positions_c = positions.copy() - np.reshape(np.mean(positions,axis=1),(population.shape[0],1,2))
+    formation_c = formation - np.reshape(np.mean(formation,axis=1),(1,1,2))
+
+    old_best_diff = np.ones((population.shape[0])) * np.inf
+    for order in permutations:
+        rel_locations = positions_c[:,list(order),:]
+        rel_dist_diff = np.mean(np.linalg.norm(rel_locations - formation_c,axis=2),axis=1)
+
+        old_best_diff = np.where(rel_dist_diff < old_best_diff, rel_dist_diff, old_best_diff) 
+
 
     # Now, we have to go over all possible combinations and take the minimum
-    behavior = np.ones((population.shape[0],2)) * np.inf;
-    best_diff = np.ones((population.shape[0],1)) * np.inf
-    time_diff = np.ones((population.shape[0],1)) * np.inf
+    direction = np.random.rand(1,n_agents,1) * 2 * np.pi - np.pi
 
-    for i in range(n_steps):
+
+    for i in range(loops):
+        # Perturb the formation
+        direction += (np.random.rand(1,n_agents,1) * 2 * np.pi - np.pi) / 30
+        #formation[:,:,[0]] += np.sin(direction) * 0.01
+        #formation[:,:,[1]] += np.cos(direction) * 0.01
+        formation_input = np.repeat(formation.copy(),population.shape[0],axis=0)
+
+        positions -= np.mean(positions,axis=1,keepdims=True)
+        formation_input -= np.mean(formation_input,axis=1,keepdims=True)
+        
+
+
         inputs = np.zeros((population.shape[0],0,n_inputs))
         for j in range(n_agents):
             # Gather inputs for 1st agent
             agents = np.delete(np.arange(n_agents),j)
             np.random.shuffle(agents)
 
+            formation_select = np.arange(n_agents)
+            np.random.shuffle(formation_select)
+
             inputs_0 = positions[:,agents,:] - positions[:,[j],:]
             inputs_0 = np.reshape(inputs_0, (population.shape[0],1,(n_agents-1)*2))
-            inputs_0 = np.concatenate((inputs_0, formation_input), axis=2)
+
+            formation_enter = formation_input[:,formation_select,:] - positions[:,[j],:]
+            formation_enter = np.reshape(formation_enter, (population.shape[0], 1,n_agents*2))
+            inputs_0 = np.concatenate((inputs_0, formation_enter), axis=2)
+
 
             # Concenate to 3 samples per genome
             inputs = np.concatenate((inputs,inputs_0),axis=1)
-            
         # Get action
         velocities = population_action(population, inputs)
         #if i == n_steps-1 and population.shape[0] > 1:print(velocities[0,:,:])
@@ -140,72 +171,46 @@ def single_evaluate(population, save=False):
 
         if save:
             position_history[i] = positions
+            formation_history[i] = formation
 
 
-        # Now at the end, compare to formation
-        positions_c = positions.copy() - np.reshape(np.mean(positions,axis=1),(population.shape[0],1,2))
-        formation_c = formation - np.reshape(np.mean(formation,axis=1),(1,1,2))
 
-        for order in permutations:
-            rel_locations = positions_c[:,list(order),:]
-            rel_dist_diff = np.mean(np.linalg.norm(rel_locations - formation_c,axis=2),axis=1)
-            rel_dist_diff = np.reshape(rel_dist_diff, (population.shape[0],1))
 
-            time_diff = np.where(rel_dist_diff < best_diff, np.ones((population.shape[0],1)) * i/n_steps, time_diff)
-            best_diff = np.where(rel_dist_diff < best_diff, rel_dist_diff, best_diff)
     if save:
         np.save('data/pos_history.npy', position_history)
+        np.save('data/for_history.npy', formation_history)
+
+    # Now at the end, compare to formation
+    positions_c = positions.copy() - np.reshape(np.mean(positions,axis=1),(population.shape[0],1,2))
+    formation_c = formation - np.reshape(np.mean(formation,axis=1),(1,1,2))
+        
+
+    best_diff = np.ones((population.shape[0])) * np.inf
+    for order in permutations:
+        rel_locations = positions_c[:,list(order),:]
+        rel_dist_diff = np.mean(np.linalg.norm(rel_locations - formation_c,axis=2),axis=1)
+
+        best_diff = np.where(rel_dist_diff < best_diff, rel_dist_diff, best_diff) 
 
 
-    
-    
-    behavior = np.concatenate((best_diff, time_diff),axis=1)
-    behavior = np.clip(behavior,0,1)
+
+    fitness = -(old_best_diff - best_diff)
 
 
-    return behavior, best_diff[:,0]
+    return fitness
 
 best_fitness = np.inf
 def evaluate_population (population):
     global archive, best_genome, best_fitness
 
     ''' Get behavior '''
-    average_behavior = np.zeros((population.shape[0],2))
     fitnesses = np.zeros(population.shape[0])
 
 
     for j in range(n_evals):
-        behavior, fitness  = single_evaluate(population)
-        average_behavior += behavior
-        fitnesses += fitness
+        fitnesses += single_evaluate(population, False, n_steps)
 
-    average_behavior /= n_evals
     fitnesses /= n_evals
 
-    novelty = np.zeros(population.shape[0])
 
-    for i in range(population.shape[0]):
-        # But this is weird. If we have multiple novel but identical individuals...
-        all_others = np.concatenate((archive, average_behavior[:i], average_behavior[i+1:]))
-
-        distances = np.abs(np.linalg.norm(all_others - average_behavior[i],axis=1))
-        distances = np.sort(distances)
-
-        k = 1
-        minimum_distances = distances[:k]
-        novelty[i] = - np.mean(minimum_distances)
-
-    if np.min(fitnesses) < best_fitness:
-        best_fitness = np.min(fitnesses)
-        best_genome = population[[np.argmin(fitnesses)],:]
-
-    single_evaluate(best_genome,save=True)
-
-    archive = archive + list(average_behavior[novelty < -0.01 ])
-
-    print(best_fitness, np.mean(average_behavior,axis=0), len(archive))
-
-    np.save('archive.npy', np.asarray(archive))
-
-
-    return novelty
+    return fitnesses

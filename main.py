@@ -18,9 +18,9 @@ def mutate (genome):
     
     for i in range(n_param):
         if np.random.rand() < p_m:
-            genome[i] += np.random.rand() * 0.2 - 0.1
+            genome[i] += np.random.rand() * 1 - 0.5
 
-population = np.random.rand(n_genomes, n_param) * 0.2 - 0.1
+population = np.random.rand(n_genomes, n_param) * 1 - 0.5
 
 # population = np.repeat(np.load('data/weights.npy'), n_genomes,axis=0)
 # for i in range(n_genomes):
@@ -61,6 +61,10 @@ while True:
     fitness = evaluate_population(total_population)
 
     # NOTE! There is randomness, so genome will behave differently.
+
+    best_genome = total_population[[np.argmin(fitness)],:]
+    
+    single_evaluate(best_genome,True, n_steps*10)
 
     #if epoch - best_epoch > 5:
     #    break
