@@ -13,7 +13,7 @@ fitnesses = np.fromfile('./output/fitness.dat')
 print(np.min(fitnesses))
 
 # Select the genome with the best fitness
-best_genome = genomes[[np.argmin(fitnesses)],:]
+best_genome = genomes[[-1],:]
 
 # Simulate once
 single_evaluate(best_genome, n_steps_lt, True, True)
