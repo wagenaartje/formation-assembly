@@ -1,5 +1,5 @@
 import numpy as np
-from evaluation import evaluate_population
+from evaluation import evaluate_population, single_evaluate
 from settings import *
 import time
 
@@ -20,13 +20,18 @@ def mutate (genome: np.ndarray) -> None:
         if np.random.rand() < p_m:
             genome[i] += np.random.rand() * 1 - 0.5
 
+# Initialize output streams
+fitness_file = open('./output/fitness.dat',mode='wb+')
+genome_file = open('./output/genome.dat',mode='wb+')
+
 # Initialize the population
 population = np.random.rand(n_genomes, n_param) * 1 - 0.5
 
 # Initialize loop variables
 best_genome = None
 best_fitness = np.inf
-epoch = 0
+lt_fitness = None
+epoch = 1
 start_time = time.time()
 
 # Start looping
@@ -55,11 +60,21 @@ while True:
     for i in range(n_genomes):
         mutate(offspring[i,:])
 
-    # Tournament selection
+    # Evaluate the new population
     total_population = np.concatenate((population,offspring), axis=0)
-    fitness = evaluate_population(total_population)
+    fitness = evaluate_population(total_population,n_steps)
 
-    best_genome = total_population[[np.argmin(fitness)],:]
+    # Save the best genome and fitness
+    new_best_fitness = np.min(fitness)
+    new_best_fitness.tofile(fitness_file)
+
+    if new_best_fitness < best_fitness:
+        best_fitness = new_best_fitness
+        best_genome  = total_population[[np.argmin(fitness)],:]
+
+    best_genome.tofile(genome_file)
+    
+    # Tournaments selection
     new_population = np.zeros((n_genomes,n_param))
 
     for j in range(2): # We need two rounds!

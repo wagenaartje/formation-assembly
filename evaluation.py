@@ -23,7 +23,7 @@ def population_action (population: np.ndarray, inputs: np.ndarray) -> np.ndarray
 
 permutations = list(itertools.permutations(range(n_agents),n_agents))
 
-def single_evaluate(population: np.ndarray, loops: int) -> np.ndarray:
+def single_evaluate(population: np.ndarray, loops: int, lt_fitness: bool = False) -> np.ndarray:
     ''' Calculates the fitness of each genome in the population on a single evaluation'''
 
     # Initialize random initial positions and formations
@@ -88,19 +88,19 @@ def single_evaluate(population: np.ndarray, loops: int) -> np.ndarray:
 
         best_diff = np.where(rel_dist_diff < best_diff, rel_dist_diff, best_diff) 
 
-
-
-    fitness = -(old_best_diff - best_diff)
-
+    if not lt_fitness:
+        fitness = -(old_best_diff - best_diff)
+    else:
+        fitness = -best_diff
 
     return fitness
 
-def evaluate_population (population: np.ndarray) -> np.ndarray:
+def evaluate_population (population: np.ndarray, loops: int, lt_fitness: bool = False) -> np.ndarray:
     ''' Calculates the fitness of each genome in the population, averaged over n_evals '''
     fitnesses = np.zeros(population.shape[0])
 
     for _ in range(n_evals):
-        fitnesses += single_evaluate(population, n_steps)
+        fitnesses += single_evaluate(population, loops, lt_fitness)
 
     fitnesses /= n_evals
 
