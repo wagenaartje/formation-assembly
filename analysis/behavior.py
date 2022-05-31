@@ -8,7 +8,7 @@ from evaluation import single_evaluate
 
 # NOTE to self: settings should be loaded from the str here?
 
-file_name = 'agents=3hidden=16evals=10steps=100pop=100pc=0.5pm=0.05.dat'
+file_name = 'agents=3hidden=8evals=10steps=100pop=100pc=0.5pm=0.05.dat'
 run_settings = settings.from_file(file_name)
 
 # Recover some other settings
