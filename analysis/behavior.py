@@ -19,9 +19,9 @@ best_genome = genomes[[-1],:]
 single_evaluate(best_genome, n_steps, True, True)
 
 # Load the results
-initial_position = np.load('./output/initial_position.npy')
-formation = np.load('./output/formation.npy')
-position_history = np.load('./output/position_history.npy')
+initial_position = np.load('./tmp/initial_position.npy')
+formation = np.load('./tmp/formation.npy')
+position_history = np.load('./tmp/position_history.npy')
 
 print(position_history.shape)
 

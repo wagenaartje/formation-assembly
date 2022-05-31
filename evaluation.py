@@ -107,9 +107,9 @@ def single_evaluate(population: np.ndarray, loops: int, lt_fitness: bool = False
         
     # If save=True, save initial position, formation, and path
     if save:
-        np.save('./output/initial_position.npy', initial_position)
-        np.save('./output/formation.npy', formation)
-        np.save('./output/position_history.npy', position_history)
+        np.save('./tmp/initial_position.npy', initial_position)
+        np.save('./tmp/formation.npy', formation)
+        np.save('./tmp/position_history.npy', position_history)
 
     bc1 = np.mean(np.linalg.norm(velocities,axis=2),axis=1, keepdims=True)
     bcs = np.concatenate((bc1, bc2),axis=1)

@@ -21,8 +21,9 @@ def mutate (genome: np.ndarray) -> None:
             genome[i] += np.random.rand() * 1 - 0.5
 
 # Initialize output streams
-fitness_file = open('./output/fitness.dat',mode='wb+')
-genome_file = open('./output/genome.dat',mode='wb+')
+settings_str = to_str()
+fitness_file = open('./runs/f_{0}.dat'.format(settings_str),mode='wb+')
+genome_file = open('./runs/g_{0}.dat'.format(settings_str),mode='wb+')
 
 # Initialize the population
 population = np.random.rand(n_genomes, n_param) * 1 - 0.5
@@ -32,7 +33,7 @@ epoch = 1
 start_time = time.time()
 
 # Start looping
-while True:
+while epoch < 10000:
      # Crossover
     shuffle = np.random.permutation(population.shape[0])
     population = population[shuffle,:]

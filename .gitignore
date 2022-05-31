@@ -1,4 +1,3 @@
 *__pycache__
-*.npy
-*.dat
 *.png
+/tmp
