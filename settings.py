@@ -27,4 +27,17 @@ def to_str () -> str:
         p_m
     )
 
-print(to_str())
+
+def from_file (file_name: str) -> dict:
+    ''' Takes a file name and returns settings in dictionary form '''
+    result = {}
+
+    result['n_agents'] = int(file_name.split('=')[1].split('h')[0])
+    result['n_hidden'] = int(file_name.split('=')[2].split('e')[0])
+    result['n_evals'] = int(file_name.split('=')[3].split('s')[0])
+    result['n_steps'] = int(file_name.split('=')[4].split('p')[0])
+    result['n_genomes'] = int(file_name.split('=')[5].split('p')[0])
+    result['p_c'] = float(file_name.split('=')[6].split('p')[0])
+    result['p_m'] = float(file_name.split('=')[7][:-4])
+
+    return result

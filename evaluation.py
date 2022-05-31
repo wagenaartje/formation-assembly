@@ -45,10 +45,10 @@ def single_evaluate(population: np.ndarray, loops: int, lt_fitness: bool = False
         old_best_diff = np.where(rel_dist_diff < old_best_diff, rel_dist_diff, old_best_diff) 
 
     # If save=true, log the position history
-    if save: position_history = np.zeros((loops, population.shape[0], 3, 2))
+    if save: position_history = np.zeros((loops, population.shape[0], n_agents, 2))
 
     bc2 = np.zeros((population.shape[0], 1))
-    velocities = np.zeros((population.shape[0],3,2))
+    velocities = np.zeros((population.shape[0],n_agents,2))
     # Now, we have to go over all possible combinations and take the minimum
     for i in range(loops):
         inputs = np.zeros((population.shape[0],0,n_inputs))
