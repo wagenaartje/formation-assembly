@@ -47,7 +47,8 @@ def single_evaluate(population: np.ndarray, loops: int, lt_fitness: bool = False
     # If save=true, log the position history
     if save: position_history = np.zeros((loops, population.shape[0], 3, 2))
 
-
+    bc2 = np.zeros((population.shape[0], 1))
+    velocities = np.zeros((population.shape[0],3,2))
     # Now, we have to go over all possible combinations and take the minimum
     for i in range(loops):
         inputs = np.zeros((population.shape[0],0,n_inputs))
@@ -78,7 +79,11 @@ def single_evaluate(population: np.ndarray, loops: int, lt_fitness: bool = False
             inputs = np.concatenate((inputs,inputs_0),axis=1)
         
         # Get action
-        velocities = population_action(population, inputs)
+        new_velocities = population_action(population, inputs)
+
+        bc2 += np.mean(np.linalg.norm(new_velocities - velocities,axis=2),axis=1,keepdims=True) / loops
+
+        velocities = new_velocities
         positions += velocities * 0.05
 
         
@@ -98,7 +103,7 @@ def single_evaluate(population: np.ndarray, loops: int, lt_fitness: bool = False
     if not lt_fitness:
         fitness = -(old_best_diff - best_diff)
     else:
-        fitness = -best_diff
+        fitness = best_diff
         
     # If save=True, save initial position, formation, and path
     if save:
@@ -106,16 +111,24 @@ def single_evaluate(population: np.ndarray, loops: int, lt_fitness: bool = False
         np.save('./output/formation.npy', formation)
         np.save('./output/position_history.npy', position_history)
 
-    return fitness
+    bc1 = np.mean(np.linalg.norm(velocities,axis=2),axis=1, keepdims=True)
+    bcs = np.concatenate((bc1, bc2),axis=1)
+
+    return fitness, bcs
 
 def evaluate_population (population: np.ndarray, loops: int, lt_fitness: bool = False) -> np.ndarray:
     ''' Calculates the fitness of each genome in the population, averaged over n_evals '''
     fitnesses = np.zeros(population.shape[0])
+    bcs = np.zeros((population.shape[0], 2))
 
     for _ in range(n_evals):
-        fitnesses += single_evaluate(population, loops, lt_fitness)
+        eval_fitness, eval_bcs = single_evaluate(population, loops, lt_fitness)
+        fitnesses += eval_fitness
+        bcs += eval_bcs
 
     fitnesses /= n_evals
+    bcs /= n_evals
 
+    # print(np.mean(bcs,axis=0), np.max(bcs,axis=0))
 
-    return fitnesses
+    return fitnesses, bcs

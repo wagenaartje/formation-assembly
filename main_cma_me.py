@@ -10,13 +10,11 @@ from ribs.archives import GridArchive
 from ribs.emitters import ImprovementEmitter
 from ribs.visualize import grid_archive_heatmap
 
-# x: total acceleration  (this does not mean we get smooth paths per se!! )
-# y: velocity when reaching target
-# objective: mean distance to target
+# NOTE: I think we should use long-term fitness here. But we have to test if algorithm works when we use that. (it should)
 
 archive = GridArchive(
-    [100, 100],  # 50 bins in each dimension.
-    [(0, 1.0), (0,1)],  # (-1, 1) for x-pos and (-3, 0) for y-vel.
+    [50, 50],  # 50 bins in each dimension.
+    [(0, np.sqrt(2)), (0,np.sqrt(2))],  # for velocities and average acceleration
 )
 
 # Load best genomes and their fitnesses
@@ -26,14 +24,14 @@ fitnesses = np.fromfile('./output/fitness.dat')
 print(np.min(fitnesses))
 
 # Select the genome with the best fitness
-initial_model = genomes[np.argmin(fitnesses)]
+initial_model = genomes[-1]
 
-
+#initial_model = np.zeros(n_param)
 emitters = [
     ImprovementEmitter(
         archive,
         initial_model.flatten(),
-        1.0,  # Initial step size.
+        0.1,  # Initial step size.
         batch_size=30,
     ) for _ in range(5)  # Create 5 separate emitters.
 ]
@@ -43,7 +41,7 @@ emitters = [
 optimizer = Optimizer(archive, emitters)
 
 start_time = time.time()
-total_itrs = 50000
+total_itrs = 5000
 
 plt.figure(figsize=(8, 6))
 
@@ -53,7 +51,8 @@ for itr in tqdm(range(1, total_itrs + 1)):
     sols = optimizer.ask()
 
     # Evaluate the models and record the objectives and BCs.
-    objs, bcs = evaluate_population(sols)
+    objs, bcs = evaluate_population(sols, n_steps_lt, lt_fitness=True)
+    objs = -objs # check this??
 
     # Send the results back to the optimizer.
     optimizer.tell(objs, bcs)
@@ -66,8 +65,8 @@ for itr in tqdm(range(1, total_itrs + 1)):
         plt.clf()
         grid_archive_heatmap(archive, vmin=-1, vmax=0)
         plt.gca().invert_yaxis()  # Makes more sense if larger velocities are on top.
-        plt.ylabel("Time")
-        plt.xlabel("Dist")
+        plt.xlabel("Final velocity")
+        plt.ylabel("Mean acceleration")
                 
         plt.savefig('archive.png')
 

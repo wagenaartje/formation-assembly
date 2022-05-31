@@ -7,7 +7,7 @@ from settings import *
 from evaluation import evaluate_population
 
 n_skip = 1 # how much genomes to skip before evaluating the next one
-n_windows = 1 # must be even
+n_windows = 20 # must be even
 
 # Load history
 genomes = np.fromfile('./output/genome.dat')
@@ -19,7 +19,7 @@ genomes = genomes[::n_skip]
 epochs = epochs[::n_skip]
 
 # Simulate the genome
-lt_fitnesses = evaluate_population(genomes, n_steps_lt, True)
+lt_fitnesses,bcs = evaluate_population(genomes, n_steps_lt, lt_fitness=True)
 
 # Convolve
 lt_fitnesses = np.convolve(lt_fitnesses, np.ones(n_windows) / n_windows, mode='valid')

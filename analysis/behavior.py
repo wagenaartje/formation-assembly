@@ -23,6 +23,10 @@ initial_position = np.load('./output/initial_position.npy')
 formation = np.load('./output/formation.npy')
 position_history = np.load('./output/position_history.npy')
 
+print(position_history.shape)
+
+print('Total acceleration:', np.sum(np.mean(np.linalg.norm(np.diff(position_history,n=2,axis=0),axis=3),axis=2)) / n_steps_lt /0.05)
+
 
 # Plot the results
 fig, ax = plt.subplots(1)

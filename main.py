@@ -59,7 +59,7 @@ while True:
 
     # Evaluate the new population
     total_population = np.concatenate((population,offspring), axis=0)
-    fitness = evaluate_population(total_population,n_steps)
+    fitness, bcs = evaluate_population(total_population,n_steps,lt_fitness=True)
 
     # Save the best genome and fitness
     best_fitness = np.min(fitness)
