@@ -16,7 +16,7 @@ print(np.min(fitnesses))
 best_genome = genomes[[-1],:]
 
 # Simulate once
-single_evaluate(best_genome, n_steps_lt, True, True)
+single_evaluate(best_genome, n_steps, True, True)
 
 # Load the results
 initial_position = np.load('./output/initial_position.npy')
@@ -25,7 +25,7 @@ position_history = np.load('./output/position_history.npy')
 
 print(position_history.shape)
 
-print('Total acceleration:', np.sum(np.mean(np.linalg.norm(np.diff(position_history,n=2,axis=0),axis=3),axis=2)) / n_steps_lt /0.05)
+print('Total acceleration:', np.sum(np.mean(np.linalg.norm(np.diff(position_history,n=2,axis=0),axis=3),axis=2)) / n_steps /0.05)
 
 
 # Plot the results

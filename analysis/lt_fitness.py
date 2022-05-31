@@ -19,7 +19,7 @@ genomes = genomes[::n_skip]
 epochs = epochs[::n_skip]
 
 # Simulate the genome
-lt_fitnesses,bcs = evaluate_population(genomes, n_steps_lt, lt_fitness=True)
+lt_fitnesses,bcs = evaluate_population(genomes, n_steps, lt_fitness=True)
 
 # Convolve
 lt_fitnesses = np.convolve(lt_fitnesses, np.ones(n_windows) / n_windows, mode='valid')

@@ -1,9 +1,8 @@
 ''' Simulation settings '''
 n_agents = 3     # Number of agents
-n_steps = 100     # Number of steps per evaluation
+n_steps = 100    # Number of steps per evaluation
 n_genomes = 100  # Number of genomes
-n_evals = 10    # Number of evaluations for fitness
-n_steps_lt = 200 # Long term number of steps per evaluation
+n_evals = 10     # Number of evaluations for fitness
 
 p_c = 0.5        # Crossover probability
 p_m = 0.05       # Mutation probability

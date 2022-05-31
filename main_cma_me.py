@@ -21,7 +21,6 @@ archive = GridArchive(
 genomes = np.fromfile('./output/genome.dat')
 genomes = np.reshape(genomes, (-1, n_param))
 fitnesses = np.fromfile('./output/fitness.dat')
-print(np.min(fitnesses))
 
 # Select the genome with the best fitness
 initial_model = genomes[-1]
@@ -51,7 +50,7 @@ for itr in tqdm(range(1, total_itrs + 1)):
     sols = optimizer.ask()
 
     # Evaluate the models and record the objectives and BCs.
-    objs, bcs = evaluate_population(sols, n_steps_lt, lt_fitness=True)
+    objs, bcs = evaluate_population(sols, n_steps, lt_fitness=True)
     objs = -objs # check this??
 
     # Send the results back to the optimizer.
