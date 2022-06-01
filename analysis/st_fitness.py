@@ -6,7 +6,9 @@ import numpy as np
 import os
 import settings
 
-files = os.listdir('./runs/')
+folder = './runs/n=6/'
+
+files = os.listdir(folder)
 
 fig, ax = plt.subplots(1)
 
@@ -16,7 +18,7 @@ for file_name in files:
     run_settings = settings.from_file(file_name)
 
 
-    fitnesses = np.fromfile('./runs/' + file_name)
+    fitnesses = np.fromfile(folder + file_name)
     epochs = np.arange(1,fitnesses.shape[0]+1)
 
     
