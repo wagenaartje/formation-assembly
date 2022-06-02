@@ -32,6 +32,7 @@ def single_evaluate(population: np.ndarray, loops: int, lt_fitness: bool = False
     
     formation = np.random.rand(1,n_agents, 2) * 4 - 2
     formation_input = np.repeat(formation.copy(),population.shape[0],axis=0)
+    formation_input -= np.mean(formation_input,axis=1,keepdims=True)
 
     # Now at the end, compare to formation
     positions_c = positions.copy() - np.reshape(np.mean(positions,axis=1),(population.shape[0],1,2))
@@ -54,8 +55,8 @@ def single_evaluate(population: np.ndarray, loops: int, lt_fitness: bool = False
         inputs = np.zeros((population.shape[0],0,n_inputs))
         
         # NOTE! We must keep this here, since we subtract formation_input and positions later.
-        positions -= np.mean(positions,axis=1,keepdims=True)
-        formation_input -= np.mean(formation_input,axis=1,keepdims=True)
+        positions_centered = positions - np.mean(positions,axis=1,keepdims=True)
+        
 
         if save: position_history[i] = positions.copy()
 
@@ -67,10 +68,10 @@ def single_evaluate(population: np.ndarray, loops: int, lt_fitness: bool = False
             formation_select = np.arange(n_agents)
             np.random.shuffle(formation_select)
 
-            inputs_0 = positions[:,agents,:] - positions[:,[j],:]
+            inputs_0 = positions_centered[:,agents,:] - positions_centered[:,[j],:]
             inputs_0 = np.reshape(inputs_0, (population.shape[0],1,(n_agents-1)*2))
 
-            formation_enter = formation_input[:,formation_select,:] - positions[:,[j],:]
+            formation_enter = formation_input[:,formation_select,:] - positions_centered[:,[j],:]
             formation_enter = np.reshape(formation_enter, (population.shape[0], 1,n_agents*2))
             inputs_0 = np.concatenate((velocity[:,[j],:], inputs_0, formation_enter), axis=2)
 

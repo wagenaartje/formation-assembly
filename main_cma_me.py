@@ -30,7 +30,7 @@ emitters = [
     ImprovementEmitter(
         archive,
         initial_model.flatten(),
-        0.1,  # Initial step size.
+        1,  # Initial step size.
         batch_size=30,
     ) for _ in range(5)  # Create 5 separate emitters.
 ]

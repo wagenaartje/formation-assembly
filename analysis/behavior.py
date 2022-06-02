@@ -45,12 +45,13 @@ print(bcs)
 
 # Plot the results
 fig, ax = plt.subplots(1)
-formation -= np.mean(formation,axis=1, keepdims=True)
 ax.scatter(formation[0,:,0], formation[0,:,1],label='Target')
 
-initial_position -= np.mean(initial_position,axis=1, keepdims=True)
 ax.scatter(initial_position[0,:,0], initial_position[0,:,1],label='Start')
 
+com = np.mean(position_history,axis=2)
+ax.scatter(com[0,0,0], com[0,0,1])
+ax.scatter(com[-1,0,0], com[-1,0,1])
 
 for i in range(run_settings['n_agents']):
     ax.plot(position_history[:,0,i,0], position_history[:,0,i,1],':')
