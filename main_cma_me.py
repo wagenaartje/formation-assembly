@@ -14,7 +14,7 @@ from ribs.visualize import grid_archive_heatmap
 
 archive = GridArchive(
     [50, 50],  # 50 bins in each dimension.
-    [(0, np.sqrt(2)), (0,np.sqrt(2))],  # for velocities and average acceleration
+    [(0, np.sqrt(2)), (-np.pi, np.pi)],  # for velocities and average acceleration
 )
 
 # Load best genomes and their fitnesses
@@ -26,13 +26,16 @@ genomes = np.reshape(genomes, (-1, n_param))
 initial_model = genomes[-1]
 
 #initial_model = np.zeros(n_param)
+
+# NOTE! We could also do emitters with different initial_models / sigmas!
+sigmas = [0.01, 0.05, 0.1,0.2,0.5,1]
 emitters = [
     ImprovementEmitter(
         archive,
         initial_model.flatten(),
-        1,  # Initial step size.
+        sigmas[i],  # Initial step size.
         batch_size=30,
-    ) for _ in range(5)  # Create 5 separate emitters.
+    ) for i in range(6)  # Create 5 separate emitters.
 ]
 
 
@@ -63,9 +66,8 @@ for itr in tqdm(range(1, total_itrs + 1)):
     if itr % 10 == 0:
         plt.clf()
         grid_archive_heatmap(archive, vmin=-1, vmax=0)
-        plt.gca().invert_yaxis()  # Makes more sense if larger velocities are on top.
         plt.xlabel("Final velocity")
-        plt.ylabel("Mean acceleration")
+        plt.ylabel("Direction")
                 
         plt.savefig('archive.png')
 

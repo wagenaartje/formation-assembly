@@ -5,11 +5,7 @@ import numpy as np
 from pymoo.model.problem import Problem
 from pymoo.algorithms.so_cmaes import CMAES
 from pymoo.optimize import minimize
-from pymoo.algorithms.so_de import DE
 from pymoo.util.termination.default import SingleObjectiveDefaultTermination
-from pymoo.algorithms.nsga2 import NSGA2
-from pymoo.visualization.scatter import Scatter
-from pymoo.model.callback import Callback
 
 from settings import *
 

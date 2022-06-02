@@ -38,28 +38,52 @@ position_history = np.load('./tmp/position_history.npy')
 
 print(position_history.shape)
 
-print('Total acceleration:', np.sum(np.mean(np.linalg.norm(np.diff(position_history,n=2,axis=0),axis=3),axis=2)) / run_settings['n_steps'] /0.05)
+print('Total acceleration:', np.sum(np.mean(np.linalg.norm(np.diff(position_history,n=2,axis=0),axis=3),axis=2))  /0.05)
 
 print(bcs)
 
 
 # Plot the results
-fig, ax = plt.subplots(1)
-ax.scatter(formation[0,:,0], formation[0,:,1],label='Target')
+fig, axes = plt.subplots(1,3)
 
-ax.scatter(initial_position[0,:,0], initial_position[0,:,1],label='Start')
+axes[0].scatter(formation[0,:,0], formation[0,:,1],label='Target')
+
+axes[0].scatter(initial_position[0,:,0], initial_position[0,:,1],label='Start')
 
 com = np.mean(position_history,axis=2)
-ax.scatter(com[0,0,0], com[0,0,1])
-ax.scatter(com[-1,0,0], com[-1,0,1])
+axes[0].scatter(com[0,0,0], com[0,0,1])
+axes[0].scatter(com[-1,0,0], com[-1,0,1])
 
 for i in range(run_settings['n_agents']):
-    ax.plot(position_history[:,0,i,0], position_history[:,0,i,1],':')
+    axes[0].plot(position_history[:,0,i,0], position_history[:,0,i,1],':')
 
 
-ax.scatter(position_history[-1,0,:,0], position_history[-1,0,:,1],c='red',label='End')
+axes[0].scatter(position_history[-1,0,:,0], position_history[-1,0,:,1],c='red',label='End')
 
-ax.set_aspect(1)
+axes[0].set_aspect(1)
 
-plt.legend()
+axes[0].legend()
+
+
+
+''' Velocity & acceleration '''
+velocity = np.linalg.norm(np.diff(position_history,n=1,axis=0),axis=3)
+time = 0.05* np.arange(velocity.shape[0])
+
+print(velocity.shape)
+
+for i in range(run_settings['n_agents']):
+    axes[1].plot(time,velocity[:,0,i] / 0.05)
+
+
+acceleration = np.linalg.norm(np.diff(position_history,n=2,axis=0),axis=3)
+time = 0.05* np.arange(acceleration.shape[0])
+
+for i in range(run_settings['n_agents']):
+    axes[2].plot(time,acceleration[:,0,i] / 0.05)
+
+
+
+
+
 plt.show()

@@ -23,14 +23,36 @@ def population_action (population: np.ndarray, inputs: np.ndarray) -> np.ndarray
 
 permutations = list(itertools.permutations(range(n_agents),n_agents))
 
+def gen_points_min_dist (min_dist):
+    points = np.zeros((1,n_agents,2))
+
+    i = 0
+    while True:
+        new_point = np.random.rand(2) * 4 - 2
+
+        good = True
+        for j in range(0, i):
+            if np.linalg.norm(new_point - points[0,j]) < min_dist:
+                good = False
+                break
+        
+        if good:
+            points[0,i] = new_point
+            i += 1
+        
+        if i == n_agents: break
+
+    return points
+
 def single_evaluate(population: np.ndarray, loops: int, lt_fitness: bool = False, save: bool = False) -> np.ndarray:
     ''' Calculates the fitness of each genome in the population on a single evaluation'''
 
     # Initialize random initial positions and formations
-    initial_position = np.random.rand(1,n_agents,2) * 4 - 2
+    initial_position = gen_points_min_dist(0.2)
+
     positions = np.repeat(initial_position.copy(), population.shape[0],axis=0)
     
-    formation = np.random.rand(1,n_agents, 2) * 4 - 2
+    formation = gen_points_min_dist(0.2)
     formation_input = np.repeat(formation.copy(),population.shape[0],axis=0)
     formation_input -= np.mean(formation_input,axis=1,keepdims=True)
 
@@ -50,6 +72,8 @@ def single_evaluate(population: np.ndarray, loops: int, lt_fitness: bool = False
 
     bc2 = np.zeros((population.shape[0], 1))
     velocity = np.zeros((population.shape[0],n_agents,2)) # NOTE to self: shouldn't we start with a random velocity perhaps?
+    collided = np.ones(population.shape[0])
+
     # Now, we have to go over all possible combinations and take the minimum
     for i in range(loops):
         inputs = np.zeros((population.shape[0],0,n_inputs))
@@ -69,6 +93,11 @@ def single_evaluate(population: np.ndarray, loops: int, lt_fitness: bool = False
             np.random.shuffle(formation_select)
 
             inputs_0 = positions_centered[:,agents,:] - positions_centered[:,[j],:]
+
+            distances = np.min(np.linalg.norm(inputs_0,axis=2),axis=1)
+
+            collided = np.where(distances < 0.2, np.zeros(population.shape[0]), collided)
+
             inputs_0 = np.reshape(inputs_0, (population.shape[0],1,(n_agents-1)*2))
 
             formation_enter = formation_input[:,formation_select,:] - positions_centered[:,[j],:]
@@ -80,12 +109,18 @@ def single_evaluate(population: np.ndarray, loops: int, lt_fitness: bool = False
             inputs = np.concatenate((inputs,inputs_0),axis=1)
         
         # Get action
+        old_velocity = velocity.copy()
+
         acceleration = population_action(population, inputs)
         velocity += acceleration * 0.05
-        velocity = np.clip(velocity,-1,1)
-        positions += velocity * 0.05
 
-        bc2 += np.mean(np.linalg.norm(acceleration,axis=2),axis=1,keepdims=True) / loops
+        collided_full = np.reshape(collided, (population.shape[0],1,1))
+
+        velocity = collided_full * np.clip(velocity,-1,1)
+        positions += velocity * 0.05
+        
+        # NOTE! Don't use "acceleration" here, because it is not true acceleration.
+        bc2 += np.mean(np.linalg.norm(velocity - old_velocity,axis=2),axis=1,keepdims=True)
 
         
 
@@ -112,7 +147,12 @@ def single_evaluate(population: np.ndarray, loops: int, lt_fitness: bool = False
         np.save('./tmp/formation.npy', formation)
         np.save('./tmp/position_history.npy', position_history)
 
+
     bc1 = np.mean(np.linalg.norm(velocity,axis=2),axis=1, keepdims=True)
+
+    # and direction!
+    bc2 = np.mean(np.arctan2(velocity[:,:,1], velocity[:,:,0]),axis=1,keepdims=True)
+
     bcs = np.concatenate((bc1, bc2),axis=1)
 
     return fitness, bcs
