@@ -6,7 +6,7 @@ import numpy as np
 import os
 import settings
 
-folder = './runs/n=5/'
+folder = './runs/n=3/'
 
 files = os.listdir(folder)
 
@@ -29,7 +29,7 @@ for file_name in files:
 
 
     if n_windows != 1:
-        ax.plot(epochs[int(n_windows/2)-1:-int(n_windows/2)],-fitnesses,label=str(run_settings['n_hidden']))
+        ax.plot(epochs[int(n_windows/2)-1:-int(n_windows/2)],-fitnesses,label=file_name)
     else:
         ax.plot(epochs,-fitnesses,label=str(run_settings['n_hidden']))
 

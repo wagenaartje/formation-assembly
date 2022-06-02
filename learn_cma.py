@@ -1,0 +1,81 @@
+## Imports
+import math
+import numpy as np
+
+from pymoo.model.problem import Problem
+from pymoo.algorithms.so_cmaes import CMAES
+from pymoo.optimize import minimize
+from pymoo.algorithms.so_de import DE
+from pymoo.util.termination.default import SingleObjectiveDefaultTermination
+from pymoo.algorithms.nsga2 import NSGA2
+from pymoo.visualization.scatter import Scatter
+from pymoo.model.callback import Callback
+
+from settings import *
+
+## Custom imports
+#from simulate import simulate
+from evaluation import evaluate_population
+
+## Define the model structure
+
+
+
+
+## Define the problem for pymoo
+class MyProblem(Problem):
+
+    def __init__(self):
+
+        # define lower and upper bounds -  1d array with length equal to number of variable
+        xl = -100 * np.ones(n_param)
+        xu = +100 * np.ones(n_param)
+
+        super().__init__(n_var=n_param, n_obj=1, n_constr=0, xl=xl, xu=xu)
+
+
+    def _evaluate(self, x, out, *args, **kwargs):
+        fitnesses, bcs = evaluate_population(x, n_steps, lt_fitness=True)
+        out["F"] = fitnesses
+
+        print(np.min(fitnesses), np.mean(fitnesses))
+
+
+class MyCallback(Callback):
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.counter = 0
+
+    def notify(self, algorithm):
+        #optimal_weights = algorithm.opt.get('X')
+        #np.save('data/weights'+ str(self.counter)+'.npy', optimal_weights);
+        self.counter += 1
+
+
+problem = MyProblem();
+
+
+algorithm = CMAES(
+    x0=np.random.random(n_param)* 1 - 0.5,
+    sigma=0.2,
+    popsize=100
+)
+
+## Run the EA
+termination = SingleObjectiveDefaultTermination(
+    x_tol=0,
+    cv_tol=0,
+    f_tol=0.01,
+    nth_gen=math.inf,
+    n_last=math.inf,
+    n_max_gen=50000,
+    n_max_evals=math.inf
+)
+
+res = minimize(problem,
+               algorithm,
+               verbose=True,
+               termination = termination,
+               callback=MyCallback())
+

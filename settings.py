@@ -8,7 +8,7 @@ p_c = 0.5        # Crossover probability
 p_m = 0.05       # Mutation probability
 
 ''' Neural network settings '''
-n_hidden = 8               # Hidden neurons
+n_hidden = 16               # Hidden neurons
 n_inputs = (n_agents)*4    # Input neurons
 n_outputs = 2              # Output neurons
 

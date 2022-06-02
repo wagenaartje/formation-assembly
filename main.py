@@ -58,7 +58,7 @@ while epoch < 10000:
     for i in range(n_genomes):
         mutate(offspring[i,:])
 
-    # Evaluate the new population
+    # Evaluate the new population (we have to re-evaluate current population, using same initial conditions and formations)
     total_population = np.concatenate((population,offspring), axis=0)
     fitness, bcs = evaluate_population(total_population,n_steps,lt_fitness=True)
 
