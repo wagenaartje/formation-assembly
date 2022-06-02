@@ -17,14 +17,14 @@ from settings import *
 #from simulate import simulate
 from evaluation import evaluate_population
 
-## Define the model structure
 
-
-
+# Initialize output streams
+settings_str = to_str()
+fitness_file = open('./runs/f_{0}.dat'.format(settings_str),mode='wb+')
+genome_file = open('./runs/g_{0}.dat'.format(settings_str),mode='wb+')
 
 ## Define the problem for pymoo
 class MyProblem(Problem):
-
     def __init__(self):
 
         # define lower and upper bounds -  1d array with length equal to number of variable
@@ -35,22 +35,18 @@ class MyProblem(Problem):
 
 
     def _evaluate(self, x, out, *args, **kwargs):
-        fitnesses, bcs = evaluate_population(x, n_steps, lt_fitness=True)
+        fitnesses, _ = evaluate_population(x, n_steps, lt_fitness=True)
         out["F"] = fitnesses
 
+        # Save the best genome and fitness
+        best_fitness = np.min(fitnesses)
+        best_fitness.tofile(fitness_file)
+
+        best_genome  = x[[np.argmin(fitnesses)],:]
+        best_genome.tofile(genome_file)
+    
+        # Log some results
         print(np.min(fitnesses), np.mean(fitnesses))
-
-
-class MyCallback(Callback):
-
-    def __init__(self) -> None:
-        super().__init__()
-        self.counter = 0
-
-    def notify(self, algorithm):
-        #optimal_weights = algorithm.opt.get('X')
-        #np.save('data/weights'+ str(self.counter)+'.npy', optimal_weights);
-        self.counter += 1
 
 
 problem = MyProblem();
@@ -59,7 +55,7 @@ problem = MyProblem();
 algorithm = CMAES(
     x0=np.random.random(n_param)* 1 - 0.5,
     sigma=0.2,
-    popsize=100
+    popsize=n_genomes
 )
 
 ## Run the EA
@@ -76,6 +72,5 @@ termination = SingleObjectiveDefaultTermination(
 res = minimize(problem,
                algorithm,
                verbose=True,
-               termination = termination,
-               callback=MyCallback())
+               termination = termination)
 
