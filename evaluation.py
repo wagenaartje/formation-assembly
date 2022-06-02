@@ -48,7 +48,7 @@ def single_evaluate(population: np.ndarray, loops: int, lt_fitness: bool = False
     if save: position_history = np.zeros((loops, population.shape[0], n_agents, 2))
 
     bc2 = np.zeros((population.shape[0], 1))
-    velocities = np.zeros((population.shape[0],n_agents,2))
+    velocity = np.zeros((population.shape[0],n_agents,2)) # NOTE to self: shouldn't we start with a random velocity perhaps?
     # Now, we have to go over all possible combinations and take the minimum
     for i in range(loops):
         inputs = np.zeros((population.shape[0],0,n_inputs))
@@ -72,19 +72,19 @@ def single_evaluate(population: np.ndarray, loops: int, lt_fitness: bool = False
 
             formation_enter = formation_input[:,formation_select,:] - positions[:,[j],:]
             formation_enter = np.reshape(formation_enter, (population.shape[0], 1,n_agents*2))
-            inputs_0 = np.concatenate((inputs_0, formation_enter), axis=2)
+            inputs_0 = np.concatenate((velocity[:,[j],:], inputs_0, formation_enter), axis=2)
 
 
             # Concatenate to 3 samples per genome
             inputs = np.concatenate((inputs,inputs_0),axis=1)
         
         # Get action
-        new_velocities = population_action(population, inputs)
+        acceleration = population_action(population, inputs)
+        velocity += acceleration * 0.05
+        velocity = np.clip(velocity,-1,1)
+        positions += velocity * 0.05
 
-        bc2 += np.mean(np.linalg.norm(new_velocities - velocities,axis=2),axis=1,keepdims=True) / loops
-
-        velocities = new_velocities
-        positions += velocities * 0.05
+        bc2 += np.mean(np.linalg.norm(acceleration,axis=2),axis=1,keepdims=True) / loops
 
         
 
@@ -111,7 +111,7 @@ def single_evaluate(population: np.ndarray, loops: int, lt_fitness: bool = False
         np.save('./tmp/formation.npy', formation)
         np.save('./tmp/position_history.npy', position_history)
 
-    bc1 = np.mean(np.linalg.norm(velocities,axis=2),axis=1, keepdims=True)
+    bc1 = np.mean(np.linalg.norm(velocity,axis=2),axis=1, keepdims=True)
     bcs = np.concatenate((bc1, bc2),axis=1)
 
     return fitness, bcs

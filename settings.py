@@ -9,8 +9,8 @@ p_m = 0.05       # Mutation probability
 
 ''' Neural network settings '''
 n_hidden = 8               # Hidden neurons
-n_inputs = (n_agents)*4 -2  # Input neurons
-n_outputs = 2               # Output neurons
+n_inputs = (n_agents)*4    # Input neurons
+n_outputs = 2              # Output neurons
 
 # Total number of parameters
 n_param = n_hidden*(n_inputs) + n_hidden + n_hidden * n_outputs + n_outputs

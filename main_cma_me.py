@@ -18,9 +18,9 @@ archive = GridArchive(
 )
 
 # Load best genomes and their fitnesses
-genomes = np.fromfile('./output/genome.dat')
+genomes = np.fromfile('./runs/g_' + to_str() + '.dat')
 genomes = np.reshape(genomes, (-1, n_param))
-fitnesses = np.fromfile('./output/fitness.dat')
+#fitnesses = np.fromfile('./output/fitness.dat')
 
 # Select the genome with the best fitness
 initial_model = genomes[-1]

@@ -8,12 +8,15 @@ from evaluation import single_evaluate
 
 # NOTE to self: settings should be loaded from the str here?
 
-file_name = 'agents=3hidden=8evals=10steps=100pop=100pc=0.5pm=0.05.dat'
+#file_name = 'agents=3hidden=8evals=10steps=100pop=100pc=0.5pm=0.05.dat'
+#run_settings = settings.from_file(file_name)
+
+file_name = settings.to_str() + '.dat'
 run_settings = settings.from_file(file_name)
 
 # Recover some other settings
 n_hidden = run_settings['n_hidden']
-n_inputs = (run_settings['n_agents'])*4 -2  # Input neurons
+n_inputs = (run_settings['n_agents'])*4  # Input neurons
 n_outputs = 2               # Output neurons
 n_param = n_hidden*(n_inputs) + n_hidden + n_hidden * n_outputs + n_outputs
 
@@ -26,7 +29,7 @@ fitnesses = np.fromfile('./runs/f_' + file_name)
 best_genome = genomes[[-1],:]
 
 # Simulate once
-single_evaluate(best_genome, run_settings['n_steps'], True, True)
+fitness, bcs = single_evaluate(best_genome, run_settings['n_steps'], True, True)
 
 # Load the results
 initial_position = np.load('./tmp/initial_position.npy')
@@ -36,6 +39,8 @@ position_history = np.load('./tmp/position_history.npy')
 print(position_history.shape)
 
 print('Total acceleration:', np.sum(np.mean(np.linalg.norm(np.diff(position_history,n=2,axis=0),axis=3),axis=2)) / run_settings['n_steps'] /0.05)
+
+print(bcs)
 
 
 # Plot the results

@@ -6,7 +6,7 @@ import numpy as np
 import os
 import settings
 
-folder = './runs/n=6/'
+folder = './runs/n=5/'
 
 files = os.listdir(folder)
 
@@ -24,7 +24,7 @@ for file_name in files:
     
 
     ''' Fitness history '''
-    n_windows = 20 # must be even
+    n_windows = 100 # must be even
     fitnesses = np.convolve(fitnesses, np.ones(n_windows) / n_windows, mode='valid')
 
 
