@@ -1,7 +1,6 @@
 import time
 import numpy as np
 import matplotlib.pyplot as plt
-from tqdm.notebook import tqdm
 from settings import *
 from evaluation import evaluate_population
 
@@ -48,7 +47,7 @@ total_itrs = 500000
 plt.figure(figsize=(8, 6))
 
 
-for itr in tqdm(range(1, total_itrs + 1)):
+for itr in range(1, total_itrs + 1):
     # Request models from the optimizer.
     sols = optimizer.ask()
 
