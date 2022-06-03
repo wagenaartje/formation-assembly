@@ -126,8 +126,7 @@ def single_evaluate(population: np.ndarray, loops: int, lt_fitness: bool = False
 
         # Update the position (if not collided!)
         collided_full = np.reshape(collided, (population.shape[0],1,1))
-        velocity = collided_full * velocity
-        positions += velocity * 0.05
+        positions += collided_full * velocity * 0.05
 
     # Now at the end, compare to formation
     positions_c = positions.copy() - np.reshape(np.mean(positions,axis=1),(population.shape[0],1,2))
@@ -170,6 +169,7 @@ def evaluate_population (population: np.ndarray, loops: int, lt_fitness: bool = 
     for _ in range(n_evals):
         eval_fitness, eval_bcs = single_evaluate(population, loops, lt_fitness)
         fitnesses += eval_fitness
+        fitnesses += eval_bcs[:,0]
         bcs += eval_bcs
 
     fitnesses /= n_evals

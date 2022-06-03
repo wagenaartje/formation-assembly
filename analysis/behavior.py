@@ -43,6 +43,7 @@ print('Total acceleration:', np.sum(np.mean(np.linalg.norm(np.diff(position_hist
 
 print(bcs)
 
+print('Fitness:', fitness)
 
 # Plot the results
 fig, axes = plt.subplots(1,3)
