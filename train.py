@@ -61,7 +61,7 @@ termination = SingleObjectiveDefaultTermination(
     f_tol=0.001,
     nth_gen=math.inf,
     n_last=math.inf,
-    n_max_gen=50000,
+    n_max_gen=10000,
     n_max_evals=math.inf
 )
 
