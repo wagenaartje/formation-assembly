@@ -2,6 +2,7 @@ import sys
 sys.path.append('.')
 
 import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
 import numpy as np
 import settings
 from evaluation import single_evaluate
@@ -62,6 +63,11 @@ axes[0].scatter(position_history[-1,0,:,0], position_history[-1,0,:,1],c='red',l
 
 axes[0].set_aspect(1)
 
+rect = Rectangle((-2,-2),4,4,linewidth=1,edgecolor='r',facecolor='none')
+
+# Add the patch to the Axes
+axes[0].add_patch(rect)
+
 axes[0].legend()
 
 
@@ -80,7 +86,7 @@ acceleration = np.linalg.norm(np.diff(position_history,n=2,axis=0),axis=3)
 time = 0.05* np.arange(acceleration.shape[0])
 
 for i in range(run_settings['n_agents']):
-    axes[2].plot(time,acceleration[:,0,i] / 0.05)
+    axes[2].plot(time,acceleration[:,0,i] / 0.05**2)
 
 
 

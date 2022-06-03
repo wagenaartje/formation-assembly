@@ -111,11 +111,22 @@ def single_evaluate(population: np.ndarray, loops: int, lt_fitness: bool = False
             inputs = np.concatenate((inputs,inputs_0),axis=1)
         
         # Get action
-        acceleration = population_action(population, inputs)
+        acceleration = population_action(population, inputs) * max_acc
+
+        acceleration_magnitude = np.linalg.norm(acceleration,axis=2,keepdims=True)
+        acceleration = np.where(acceleration_magnitude < max_acc, acceleration, acceleration / acceleration_magnitude * max_acc)
+
         velocity += acceleration * 0.05
 
+
+        # Cap the velocity
+        velocity_magnitude = np.linalg.norm(velocity,axis=2,keepdims=True)
+        velocity = np.where(velocity_magnitude < max_vel, velocity, velocity / velocity_magnitude * max_vel)
+
+
+        # Update the position (if not collided!)
         collided_full = np.reshape(collided, (population.shape[0],1,1))
-        velocity = collided_full * np.clip(velocity,-1,1)
+        velocity = collided_full * velocity
         positions += velocity * 0.05
         
         # NOTE! Don't use "acceleration" here, because it is not true acceleration.
