@@ -20,7 +20,7 @@ n_param = n_hidden*(n_inputs) + n_hidden + n_hidden * n_outputs + n_outputs
 
 def to_str () -> str:
     ''' Converts the settings to a string sequence '''
-    return 'agents={0}hidden={1}evals={2}steps={3}pop={4}dist={5}acc=2'.format(
+    return 'agents={0}hidden={1}evals={2}steps={3}pop={4}dist={5}'.format(
         n_agents,
         n_hidden,
         n_evals,
