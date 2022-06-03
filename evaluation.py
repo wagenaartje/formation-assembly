@@ -72,8 +72,8 @@ def single_evaluate(population: np.ndarray, loops: int, lt_fitness: bool = False
     # If save=true, log the position history
     if save: position_history = np.zeros((loops, population.shape[0], n_agents, 2))
 
-    arrival_times = np.ones((population.shape[0], 1))
-    average_velocity = np.zeros((population.shape[0],1))
+    com_start = np.mean(positions,axis=1)
+
     velocity = np.zeros((population.shape[0],n_agents,2)) # NOTE to self: shouldn't we start with a random velocity perhaps?
     collided = np.ones(population.shape[0])
 
@@ -128,19 +128,6 @@ def single_evaluate(population: np.ndarray, loops: int, lt_fitness: bool = False
         collided_full = np.reshape(collided, (population.shape[0],1,1))
         velocity = collided_full * velocity
         positions += velocity * 0.05
-        
-        # NOTE! Don't use "acceleration" here, because it is not true acceleration.
-        average_velocity += np.mean(np.linalg.norm(velocity,axis=2),axis=1,keepdims=True) / loops
-
-        # Check for "time" boundary condition
-        for order in permutations:
-            rel_locations = positions_centered[:,list(order),:]
-            rel_dist_diff = np.min(np.linalg.norm(rel_locations - formation_c,axis=2),axis=1,keepdims=True)
-
-            arrival_times = np.where((rel_dist_diff < 0.1) & (arrival_times == 1), i / loops * np.ones((population.shape[0],1)), arrival_times) 
-
-        
-
 
     # Now at the end, compare to formation
     positions_c = positions.copy() - np.reshape(np.mean(positions,axis=1),(population.shape[0],1,2))
@@ -165,14 +152,20 @@ def single_evaluate(population: np.ndarray, loops: int, lt_fitness: bool = False
         np.save('./tmp/position_history.npy', position_history)
 
 
-    bcs = np.concatenate((average_velocity, arrival_times),axis=1)
+    # Boundary conditions
+    com_end = np.mean(positions,axis=1)
+    drift = np.linalg.norm(com_end - com_start, axis=1, keepdims=True)
+    final_velocity = np.mean(np.linalg.norm(velocity,axis=2),axis=1,keepdims=True)
+    final_direction = np.mean(np.arctan2(velocity[:,:,1], velocity[:,:,0]),axis=1, keepdims=True)
+
+    bcs = np.concatenate((final_velocity, drift, final_direction),axis=1)
 
     return fitness, bcs
 
 def evaluate_population (population: np.ndarray, loops: int, lt_fitness: bool = False) -> np.ndarray:
     ''' Calculates the fitness of each genome in the population, averaged over n_evals '''
     fitnesses = np.zeros(population.shape[0])
-    bcs = np.zeros((population.shape[0], 2))
+    bcs = np.zeros((population.shape[0], 3))
 
     for _ in range(n_evals):
         eval_fitness, eval_bcs = single_evaluate(population, loops, lt_fitness)

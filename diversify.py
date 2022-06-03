@@ -13,7 +13,7 @@ from ribs.visualize import grid_archive_heatmap
 
 archive = GridArchive(
     [50, 50],  # 50 bins in each dimension.
-    [(0, np.sqrt(2)), (0,1)],  # for velocities and average acceleration
+    [(0, 1), (-np.pi, np.pi)],  # for velocities and average acceleration
 )
 
 # Load best genomes and their fitnesses
@@ -53,6 +53,7 @@ for i in range(1, total_itrs + 1):
 
     # Evaluate the models and record the objectives and BCs.
     objs, bcs = evaluate_population(sols, n_steps, lt_fitness=True)
+    bcs = bcs[:,[0,2]]
     objs = -objs # check this??
 
     # Send the results back to the optimizer.
@@ -65,9 +66,8 @@ for i in range(1, total_itrs + 1):
     if i % 10 == 0:
         plt.clf()
         grid_archive_heatmap(archive, vmin=-1, vmax=0)
-        plt.gca().invert_yaxis()  # Makes more sense if larger velocities are on top.
-        plt.xlabel("Mean velocity")
-        plt.ylabel("Arrival time")
+        plt.xlabel("Mean final velocity")
+        plt.ylabel("Mean final direction")
                 
         plt.savefig('./behaviors/archive.png')
 
