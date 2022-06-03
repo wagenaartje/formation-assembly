@@ -47,7 +47,7 @@ total_itrs = 500000
 plt.figure(figsize=(8, 6))
 
 
-for itr in range(1, total_itrs + 1):
+for i in range(1, total_itrs + 1):
     # Request models from the optimizer.
     sols = optimizer.ask()
 
@@ -59,17 +59,38 @@ for itr in range(1, total_itrs + 1):
     optimizer.tell(objs, bcs)
 
     # Logging.
-    print(itr, len(archive), archive.stats.obj_max)
+    print(i, len(archive), archive.stats.obj_max)
 
-    # Test something here
-    if itr % 10 == 0:
+    # Regenerate archive
+    if i % 10 == 0:
         plt.clf()
         grid_archive_heatmap(archive, vmin=-1, vmax=0)
         plt.gca().invert_yaxis()  # Makes more sense if larger velocities are on top.
         plt.xlabel("Mean velocity")
         plt.ylabel("Arrival time")
                 
-        plt.savefig('archive.png')
+        plt.savefig('./behaviors/archive.png')
+
+    # Save arcrhive
+    if i % 100 == 0:
+        elites = np.zeros((len(archive), n_param))
+        fitnesses = np.zeros((len(archive), 1))
+        behaviors = np.zeros((len(archive), 2))
+
+        counter = 0
+        for elite in archive:
+            elites[counter] = elite.sol
+            fitnesses[counter] = elite.obj
+            behaviors[counter] = elite.beh
+
+            counter += 1
+
+        np.save('./behaviors/elites.npy', elites)
+        np.save('./behaviors/behaviors.npy', behaviors)
+        np.save('./behaviors/fitness.npy', fitnesses)
+
+        
+
 
 
 # With 32 neurons, -0.11 as best fitness
