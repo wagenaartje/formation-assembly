@@ -116,7 +116,7 @@ def single_evaluate(population: np.ndarray, loops: int, lt_fitness: bool = False
         acceleration_magnitude = np.linalg.norm(acceleration,axis=2,keepdims=True)
         acceleration = np.where(acceleration_magnitude < max_acc, acceleration, acceleration / acceleration_magnitude * max_acc)
 
-        velocity += acceleration * 0.05
+        velocity += acceleration * 0.005
 
 
         # Cap the velocity
@@ -126,7 +126,7 @@ def single_evaluate(population: np.ndarray, loops: int, lt_fitness: bool = False
 
         # Update the position (if not collided!)
         collided_full = np.reshape(collided, (population.shape[0],1,1))
-        positions += collided_full * velocity * 0.05
+        positions += collided_full * velocity * 0.005
 
     # Now at the end, compare to formation
     positions_c = positions.copy() - np.reshape(np.mean(positions,axis=1),(population.shape[0],1,2))

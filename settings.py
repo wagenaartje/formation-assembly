@@ -1,6 +1,6 @@
 ''' Simulation settings '''
 n_agents = 3     # Number of agents
-n_steps = 100    # Number of steps per evaluation
+n_steps = 200    # Number of steps per evaluation
 n_genomes = 100  # Number of genomes
 n_evals = 10     # Number of evaluations for fitness
 

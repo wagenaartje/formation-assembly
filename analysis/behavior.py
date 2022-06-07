@@ -30,7 +30,7 @@ fitnesses = np.fromfile('./runs/f_' + file_name)
 best_genome = genomes[[-1],:]
 
 # Simulate once
-fitness, bcs = single_evaluate(best_genome, run_settings['n_steps'], True, True)
+fitness, bcs = single_evaluate(best_genome, 10*run_settings['n_steps'], True, True)
 
 # Load the results
 initial_position = np.load('./tmp/initial_position.npy')
