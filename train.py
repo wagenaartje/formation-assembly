@@ -2,40 +2,22 @@
 import math
 import numpy as np
 import time
-import json5,json
+import json5, json
 
 from pymoo.model.problem import Problem
 from pymoo.algorithms.so_cmaes import CMAES
+from pymoo.util.display import Display
 from pymoo.optimize import minimize
 from pymoo.util.termination.default import SingleObjectiveDefaultTermination
 
 ## Custom imports
 from evaluation import evaluate_population
 
-## Import configuration
-with open('config.json') as f:
-    config = json5.load(f)
-
-
-# Initialize output streams
-timestamp = int(time.time())
-fitness_file = open('./results/{0}_f.dat'.format(timestamp),mode='wb+')
-genome_file = open('./results/{0}_g.dat'.format(timestamp),mode='wb+')
-config_file = open('./results/{0}_c.json'.format(timestamp), 'w')
-
-json.dump(config, config_file, sort_keys=True, indent=4)
-config_file.close()
-
-# Add related parameters
-config['n_inputs'] = config['n_agents']*4 # Input neurons
-config['n_outputs'] = 2                   # Output neurons
-
-# Total number of parameters
-config['n_param'] = config['n_hidden']*config['n_inputs'] + config['n_hidden'] + config['n_hidden'] * config['n_outputs'] + config['n_outputs']
-
 ## Define the problem for pymoo
 class FormationProblem (Problem):
-    def __init__(self):
+    def __init__(self, config: dict, fitness_file, genome_file):
+        self.fitness_file = fitness_file
+        self.genome_file = genome_file
 
         # define lower and upper bounds -  1d array with length equal to number of variable
         xl = -100 * np.ones(config['n_param'])
@@ -50,34 +32,69 @@ class FormationProblem (Problem):
 
         # Save the best genome and fitness
         best_fitness = np.min(fitnesses)
-        best_fitness.tofile(fitness_file)
+        best_fitness.tofile(self.fitness_file)
 
         best_genome  = x[[np.argmin(fitnesses)],:]
-        best_genome.tofile(genome_file)
-    
-        # Log some results
-        print(np.min(fitnesses), np.mean(fitnesses))
+        best_genome.tofile(self.genome_file)
+
+class MyDisplay(Display):
+    def __init__ (self):
+        self.start = time.time()
+
+        super().__init__()
+
+    def _do(self, problem, evaluator, algorithm):
+        super()._do(problem, evaluator, algorithm)
+        self.output.append('f_opt', algorithm.opt.get('F')[0][0])
+        self.output.append("f_min", np.min(algorithm.pop.get("F")))
+        self.output.append("f_mean", np.mean(algorithm.pop.get("F")))
+        self.output.append("time", time.time() - self.start)
+
+        self.start = time.time()
 
 
-problem = FormationProblem();
+def train (config: dict) -> None:
+    # Initialize output streams
+    timestamp = int(time.time())
+    fitness_file = open('./results/{0}_f.dat'.format(timestamp),mode='wb+')
+    genome_file = open('./results/{0}_g.dat'.format(timestamp),mode='wb+')
+    config_file = open('./results/{0}_c.json'.format(timestamp), 'w')
 
+    json.dump(config, config_file, sort_keys=True, indent=4)
+    config_file.close()
 
-algorithm = CMAES(
-    x0=np.random.random(config['n_param'])* 1 - 0.5,
-    sigma=0.2,
-    popsize=config['n_genomes']
-)
+    # Add related parameters
+    config['n_inputs'] = config['n_agents']*4 # Input neurons
+    config['n_outputs'] = 2                   # Output neurons
 
-## Run the EA
-termination = SingleObjectiveDefaultTermination(
-    x_tol=0,
-    cv_tol=0,
-    f_tol=0.001,
-    nth_gen=math.inf,
-    n_last=math.inf,
-    n_max_gen=10000,
-    n_max_evals=math.inf
-)
+    # Total number of parameters
+    config['n_param'] = config['n_hidden']*config['n_inputs'] + config['n_hidden'] + config['n_hidden'] * config['n_outputs'] + config['n_outputs']
 
-res = minimize(problem, algorithm, verbose=True, termination=termination)
+    problem = FormationProblem(config, fitness_file, genome_file);
+
+    algorithm = CMAES(
+        x0=np.random.random(config['n_param'])* 1 - 0.5,
+        sigma=0.2,
+        popsize=config['n_genomes']
+    )
+
+    ## Run the EA
+    termination = SingleObjectiveDefaultTermination(
+        x_tol=0,
+        cv_tol=0,
+        f_tol=0.001,
+        nth_gen=math.inf,
+        n_last=math.inf,
+        n_max_gen=10000,
+        n_max_evals=math.inf
+    )
+
+    minimize(problem, algorithm, verbose=True, termination=termination, display=MyDisplay())
+
+if __name__ == '__main__':
+    # Import configuration
+    with open('base_config.json') as f:
+        config = json5.load(f)
+
+    train(config)
 
