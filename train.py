@@ -3,6 +3,7 @@ import math
 import numpy as np
 import time
 import json5, json
+import os
 
 from pymoo.model.problem import Problem
 from pymoo.algorithms.so_cmaes import CMAES
@@ -18,6 +19,7 @@ class FormationProblem (Problem):
     def __init__(self, config: dict, fitness_file, genome_file):
         self.fitness_file = fitness_file
         self.genome_file = genome_file
+        self.config = config
 
         # define lower and upper bounds -  1d array with length equal to number of variable
         xl = -100 * np.ones(config['n_param'])
@@ -27,7 +29,7 @@ class FormationProblem (Problem):
 
 
     def _evaluate(self, x, out, *args, **kwargs):
-        fitnesses  = evaluate_population(config, x)
+        fitnesses  = evaluate_population(self.config, x)
         out["F"] = fitnesses
 
         # Save the best genome and fitness
@@ -36,6 +38,7 @@ class FormationProblem (Problem):
 
         best_genome  = x[[np.argmin(fitnesses)],:]
         best_genome.tofile(self.genome_file)
+
 
 class MyDisplay(Display):
     def __init__ (self):
@@ -56,9 +59,10 @@ class MyDisplay(Display):
 def train (config: dict) -> None:
     # Initialize output streams
     timestamp = int(time.time())
-    fitness_file = open('./results/{0}_f.dat'.format(timestamp),mode='wb+')
-    genome_file = open('./results/{0}_g.dat'.format(timestamp),mode='wb+')
-    config_file = open('./results/{0}_c.json'.format(timestamp), 'w')
+    os.mkdir('./results/{0}/'.format(timestamp))
+    fitness_file = open('./results/{0}/fitnesses.dat'.format(timestamp),mode='wb+')
+    genome_file = open('./results/{0}/genomes.dat'.format(timestamp),mode='wb+')
+    config_file = open('./results/{0}/config.json'.format(timestamp), 'w')
 
     json.dump(config, config_file, sort_keys=True, indent=4)
     config_file.close()
@@ -82,7 +86,7 @@ def train (config: dict) -> None:
     termination = SingleObjectiveDefaultTermination(
         x_tol=0,
         cv_tol=0,
-        f_tol=0.001,
+        f_tol=0,
         nth_gen=math.inf,
         n_last=math.inf,
         n_max_gen=10000,
