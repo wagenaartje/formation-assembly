@@ -10,8 +10,8 @@ with open('base_config.json') as f:
 
 dts = [0.005, 0.01, 0.05, 0.10]
 
-for dt in dts:
-    base_config['dt'] = dt
+for i in range(5):
+    for dt in dts:
+        base_config['dt'] = dt
 
-    for i in range(1):
         train('/dt/', base_config)

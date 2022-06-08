@@ -10,8 +10,8 @@ with open('base_config.json') as f:
 
 hs = [8, 16, 32, 64]
 
-for h in hs:
-    base_config['n_hidden'] = h
+for i in range(5):
+    for h in hs:
+        base_config['n_hidden'] = h
 
-    for i in range(1):
         train('/hidden/', base_config)

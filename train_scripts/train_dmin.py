@@ -10,8 +10,8 @@ with open('base_config.json') as f:
 
 d_mins = [0, 0.1, 0.2, 0.3]
 
-for d_min in d_mins:
-    base_config['d_min'] = d_min
-
-    for i in range(1):
+for i in range(5):
+    for d_min in d_mins:
+        base_config['d_min'] = d_min
+        
         train('/dmin/', base_config)

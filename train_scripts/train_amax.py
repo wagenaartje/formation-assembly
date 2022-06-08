@@ -10,8 +10,8 @@ with open('base_config.json') as f:
 
 a_maxes = [0.5, 1, 2, 4]
 
-for a_max in a_maxes:
-    base_config['a_max'] = a_max
+for i in range(5):
+    for a_max in a_maxes:
+        base_config['a_max'] = a_max
 
-    for i in range(1):
         train('/amax/', base_config)

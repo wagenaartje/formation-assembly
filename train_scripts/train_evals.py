@@ -10,8 +10,8 @@ with open('base_config.json') as f:
 
 evals = [1, 5, 10, 20]
 
-for e in evals:
-    base_config['n_evals'] = e
+for i in range(5):
+    for e in evals:
+        base_config['n_evals'] = e
 
-    for i in range(1):
         train('/evals/', base_config)
