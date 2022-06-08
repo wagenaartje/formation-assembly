@@ -56,13 +56,14 @@ class MyDisplay(Display):
         self.start = time.time()
 
 
-def train (config: dict) -> None:
+def train (subfolder: str, config: dict) -> None:
     # Initialize output streams
     timestamp = int(time.time())
-    os.mkdir('./results/{0}/'.format(timestamp))
-    fitness_file = open('./results/{0}/fitnesses.dat'.format(timestamp),mode='wb+')
-    genome_file = open('./results/{0}/genomes.dat'.format(timestamp),mode='wb+')
-    config_file = open('./results/{0}/config.json'.format(timestamp), 'w')
+    os.makedirs('./results/{0}/'.format(subfolder), exist_ok=True)
+    os.makedirs('./results/{0}/{1}/'.format(subfolder, timestamp), exist_ok=True)
+    fitness_file = open('./results/{0}/{1}/fitnesses.dat'.format(subfolder, timestamp),mode='wb+')
+    genome_file = open('./results/{0}/{1}/genomes.dat'.format(subfolder, timestamp),mode='wb+')
+    config_file = open('./results/{0}/{1}/config.json'.format(subfolder, timestamp), 'w')
 
     json.dump(config, config_file, sort_keys=True, indent=4)
     config_file.close()
@@ -100,5 +101,5 @@ if __name__ == '__main__':
     with open('base_config.json') as f:
         config = json5.load(f)
 
-    train(config)
+    train('', config)
 
