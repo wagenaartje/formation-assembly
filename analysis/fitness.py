@@ -18,8 +18,6 @@ file_names = os.listdir(folder)
 
 for file_name in file_names:
     if file_name[0] != 'f': continue
-    run_settings = settings.from_file(file_name)
-
 
     fitnesses = np.fromfile(folder + file_name)
     epochs = np.arange(1,fitnesses.shape[0]+1)

@@ -46,8 +46,9 @@ def gen_points_min_dist (min_dist):
 
 permutations = list(itertools.permutations(range(n_agents),n_agents))
 
-def single_evaluate(population: np.ndarray, loops: int, lt_fitness: bool = False, save: bool = False) -> np.ndarray:
+def single_evaluate(population: np.ndarray, t_max: float, lt_fitness: bool = False, save: bool = False) -> np.ndarray:
     ''' Calculates the fitness of each genome in the population on a single evaluation'''
+    loops = int(t_max/dt)
 
     # Initialize random initial positions and formations
     initial_position = gen_points_min_dist(min_dist)
@@ -116,7 +117,7 @@ def single_evaluate(population: np.ndarray, loops: int, lt_fitness: bool = False
         acceleration_magnitude = np.linalg.norm(acceleration,axis=2,keepdims=True)
         acceleration = np.where(acceleration_magnitude < max_acc, acceleration, acceleration / acceleration_magnitude * max_acc)
 
-        velocity += acceleration * 0.005
+        velocity += acceleration * dt
 
 
         # Cap the velocity
@@ -126,7 +127,7 @@ def single_evaluate(population: np.ndarray, loops: int, lt_fitness: bool = False
 
         # Update the position (if not collided!)
         collided_full = np.reshape(collided, (population.shape[0],1,1))
-        positions += collided_full * velocity * 0.005
+        positions += collided_full * velocity * dt
 
     # Now at the end, compare to formation
     positions_c = positions.copy() - np.reshape(np.mean(positions,axis=1),(population.shape[0],1,2))
@@ -161,13 +162,13 @@ def single_evaluate(population: np.ndarray, loops: int, lt_fitness: bool = False
 
     return fitness, bcs
 
-def evaluate_population (population: np.ndarray, loops: int, lt_fitness: bool = False) -> np.ndarray:
+def evaluate_population (population: np.ndarray, t_max: float, lt_fitness: bool = False) -> np.ndarray:
     ''' Calculates the fitness of each genome in the population, averaged over n_evals '''
     fitnesses = np.zeros(population.shape[0])
     bcs = np.zeros((population.shape[0], 3))
 
     for _ in range(n_evals):
-        eval_fitness, eval_bcs = single_evaluate(population, loops, lt_fitness)
+        eval_fitness, eval_bcs = single_evaluate(population, t_max, lt_fitness)
         fitnesses += eval_fitness
         fitnesses += eval_bcs[:,0]
         bcs += eval_bcs

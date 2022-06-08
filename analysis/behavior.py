@@ -30,7 +30,8 @@ fitnesses = np.fromfile('./runs/f_' + file_name)
 best_genome = genomes[[-1],:]
 
 # Simulate once
-fitness, bcs = single_evaluate(best_genome, 10*run_settings['n_steps'], True, True)
+fitness, bcs = single_evaluate(best_genome, run_settings['t_max'], True, True)
+
 
 # Load the results
 initial_position = np.load('./tmp/initial_position.npy')
@@ -75,19 +76,19 @@ axes[0].legend()
 
 ''' Velocity & acceleration '''
 velocity = np.linalg.norm(np.diff(position_history,n=1,axis=0),axis=3)
-time = 0.05* np.arange(velocity.shape[0])
+time = run_settings['dt']* np.arange(velocity.shape[0])
 
 print(velocity.shape)
 
 for i in range(run_settings['n_agents']):
-    axes[1].plot(time,velocity[:,0,i] / 0.05)
+    axes[1].plot(time,velocity[:,0,i] / run_settings['dt'])
 
 
 acceleration = np.linalg.norm(np.diff(position_history,n=2,axis=0),axis=3)
-time = 0.05* np.arange(acceleration.shape[0])
+time = run_settings['dt']* np.arange(acceleration.shape[0])
 
 for i in range(run_settings['n_agents']):
-    axes[2].plot(time,acceleration[:,0,i] / 0.05**2)
+    axes[2].plot(time,acceleration[:,0,i] / run_settings['dt']**2)
 
 
 

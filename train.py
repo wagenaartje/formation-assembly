@@ -31,7 +31,7 @@ class MyProblem(Problem):
 
 
     def _evaluate(self, x, out, *args, **kwargs):
-        fitnesses, _ = evaluate_population(x, n_steps, lt_fitness=True)
+        fitnesses, _ = evaluate_population(x, t_max, lt_fitness=True)
         out["F"] = fitnesses
 
         # Save the best genome and fitness
