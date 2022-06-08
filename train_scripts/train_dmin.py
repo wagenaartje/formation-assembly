@@ -8,10 +8,10 @@ import json5
 with open('base_config.json') as f:
     base_config = json5.load(f)
 
-hs = [8, 16, 32, 64]
+d_mins = [0, 0.1, 0.2, 0.3]
 
-for h in hs:
-    base_config['n_hidden'] = h
+for d_min in d_mins:
+    base_config['d_min'] = d_min
 
-    for i in range(10):
-        train('/hidd/', base_config)
+    for i in range(1):
+        train('/dmin/', base_config)

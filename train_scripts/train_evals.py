@@ -13,5 +13,5 @@ evals = [1, 5, 10, 20]
 for e in evals:
     base_config['n_evals'] = e
 
-    for i in range(10):
+    for i in range(1):
         train('/evals/', base_config)

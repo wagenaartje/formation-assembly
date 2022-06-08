@@ -90,7 +90,7 @@ def train (subfolder: str, config: dict) -> None:
         f_tol=0,
         nth_gen=math.inf,
         n_last=math.inf,
-        n_max_gen=10000,
+        n_max_gen=config['n_gen'],
         n_max_evals=math.inf
     )
 

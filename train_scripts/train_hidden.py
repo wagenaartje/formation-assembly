@@ -8,10 +8,10 @@ import json5
 with open('base_config.json') as f:
     base_config = json5.load(f)
 
-a_maxes = [0.5, 1, 2, 4]
+hs = [8, 16, 32, 64]
 
-for a_max in a_maxes:
-    base_config['a_max'] = a_max
+for h in hs:
+    base_config['n_hidden'] = h
 
     for i in range(1):
-        train('/amax/', base_config)
+        train('/hidden/', base_config)
