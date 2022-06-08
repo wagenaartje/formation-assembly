@@ -1,3 +1,4 @@
-# AE4350: Formation forming
-- Stress in report that it may seem simple, but a lot (A LOT!) of trial and error went into defining the inputs and fitness function.
-  using the formation RELATIVE to the agent was an extremely powerful tool.
+# TODO
+- Create structure of results section
+- Compare high-dt trained genomes at low-dt sampling rates. Is the performance "really" different?
+- use new scheme for multiple runs, and choose what parameters will be varied.  (both sensitivity and behavioral analysis)

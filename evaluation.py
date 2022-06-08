@@ -1,15 +1,14 @@
 import numpy as np
-from settings import *
 import itertools
 
-def population_action (population: np.ndarray, inputs: np.ndarray) -> np.ndarray:
+def population_action (config: dict, population: np.ndarray, inputs: np.ndarray) -> np.ndarray:
     ''' Calculates the action of each genome using a single-layer neural-network '''
 
     # Gather the weights and biases
-    w1 = population[:,:n_hidden*n_inputs].reshape((population.shape[0],n_inputs, n_hidden))
-    b1 = population[:,n_hidden*n_inputs:n_hidden*(n_inputs+1)].reshape((population.shape[0], 1, n_hidden))
-    w2 = population[:,n_hidden*(n_inputs+1):n_hidden*(n_inputs+1+n_outputs)].reshape((population.shape[0],n_hidden, n_outputs))
-    b2 = population[:,-n_outputs:].reshape((population.shape[0], 1, n_outputs))
+    w1 = population[:,:config['n_hidden']*config['n_inputs']].reshape((population.shape[0],config['n_inputs'], config['n_hidden']))
+    b1 = population[:,config['n_hidden']*config['n_inputs']:config['n_hidden']*(config['n_inputs']+1)].reshape((population.shape[0], 1, config['n_hidden']))
+    w2 = population[:,config['n_hidden']*(config['n_inputs']+1):config['n_hidden']*(config['n_inputs']+1+config['n_outputs'])].reshape((population.shape[0],config['n_hidden'], config['n_outputs']))
+    b2 = population[:,-config['n_outputs']:].reshape((population.shape[0], 1, config['n_outputs']))
 
     # Activations of first layer
     z1 = np.einsum('ijk,ikp->ijp', inputs,w1) + b1
@@ -21,10 +20,8 @@ def population_action (population: np.ndarray, inputs: np.ndarray) -> np.ndarray
 
     return a2
 
-permutations = list(itertools.permutations(range(n_agents),n_agents))
-
-def gen_points_min_dist (min_dist):
-    points = np.zeros((1,n_agents,2))
+def gen_points_min_dist (config: dict) -> np.ndarray:
+    points = np.zeros((1,config['n_agents'],2))
 
     i = 0
     while True:
@@ -32,7 +29,7 @@ def gen_points_min_dist (min_dist):
 
         good = True
         for j in range(0, i):
-            if np.linalg.norm(new_point - points[0,j]) < min_dist:
+            if np.linalg.norm(new_point - points[0,j]) < config['d_min']:
                 good = False
                 break
         
@@ -40,47 +37,34 @@ def gen_points_min_dist (min_dist):
             points[0,i] = new_point
             i += 1
         
-        if i == n_agents: break
+        if i == config['n_agents']: break
 
     return points
 
-permutations = list(itertools.permutations(range(n_agents),n_agents))
-
-def single_evaluate(population: np.ndarray, t_max: float, lt_fitness: bool = False, save: bool = False) -> np.ndarray:
+def single_evaluate(config: dict, population: np.ndarray, save: bool = False) -> np.ndarray:
     ''' Calculates the fitness of each genome in the population on a single evaluation'''
-    loops = int(t_max/dt)
+    permutations = list(itertools.permutations(range(config['n_agents']),config['n_agents']))
+
+    loops = int(config['t_max']/config['dt'])
 
     # Initialize random initial positions and formations
-    initial_position = gen_points_min_dist(min_dist)
+    initial_position = gen_points_min_dist(config)
 
     positions = np.repeat(initial_position.copy(), population.shape[0],axis=0)
     
-    formation = gen_points_min_dist(min_dist)
+    formation = gen_points_min_dist(config)
     formation_input = np.repeat(formation.copy(),population.shape[0],axis=0)
     formation_input -= np.mean(formation_input,axis=1,keepdims=True)
 
-    # Now at the end, compare to formation
-    positions_c = positions.copy() - np.reshape(np.mean(positions,axis=1),(population.shape[0],1,2))
-    formation_c = formation - np.reshape(np.mean(formation,axis=1),(1,1,2))
-
-    old_best_diff = np.ones((population.shape[0])) * np.inf
-    for order in permutations:
-        rel_locations = positions_c[:,list(order),:]
-        rel_dist_diff = np.mean(np.linalg.norm(rel_locations - formation_c,axis=2),axis=1)
-
-        old_best_diff = np.where(rel_dist_diff < old_best_diff, rel_dist_diff, old_best_diff) 
-
     # If save=true, log the position history
-    if save: position_history = np.zeros((loops, population.shape[0], n_agents, 2))
+    if save: position_history = np.zeros((loops, population.shape[0], config['n_agents'], 2))
 
-    com_start = np.mean(positions,axis=1)
-
-    velocity = np.zeros((population.shape[0],n_agents,2)) # NOTE to self: shouldn't we start with a random velocity perhaps?
+    velocity = np.zeros((population.shape[0],config['n_agents'],2)) 
     collided = np.ones(population.shape[0])
 
     # Now, we have to go over all possible combinations and take the minimum
     for i in range(loops):
-        inputs = np.zeros((population.shape[0],0,n_inputs))
+        inputs = np.zeros((population.shape[0],0,config['n_inputs']))
         
         # NOTE! We must keep this here, since we subtract formation_input and positions later.
         positions_centered = positions - np.mean(positions,axis=1,keepdims=True)
@@ -88,23 +72,23 @@ def single_evaluate(population: np.ndarray, t_max: float, lt_fitness: bool = Fal
 
         if save: position_history[i] = positions.copy()
 
-        for j in range(n_agents):
+        for j in range(config['n_agents']):
             # Gather inputs for 1st agent
-            agents = np.delete(np.arange(n_agents),j)
+            agents = np.delete(np.arange(config['n_agents']),j)
             np.random.shuffle(agents)
 
-            formation_select = np.arange(n_agents)
+            formation_select = np.arange(config['n_agents'])
             np.random.shuffle(formation_select)
 
             inputs_0 = positions_centered[:,agents,:] - positions_centered[:,[j],:]
 
             distances = np.min(np.linalg.norm(inputs_0,axis=2),axis=1)
-            collided = np.where(distances < min_dist, np.zeros(population.shape[0]), collided)
+            collided = np.where(distances < config[ 'd_min'], np.zeros(population.shape[0]), collided)
 
-            inputs_0 = np.reshape(inputs_0, (population.shape[0],1,(n_agents-1)*2))
+            inputs_0 = np.reshape(inputs_0, (population.shape[0],1,(config['n_agents']-1)*2))
 
             formation_enter = formation_input[:,formation_select,:] - positions_centered[:,[j],:]
-            formation_enter = np.reshape(formation_enter, (population.shape[0], 1,n_agents*2))
+            formation_enter = np.reshape(formation_enter, (population.shape[0], 1,config['n_agents']*2))
             inputs_0 = np.concatenate((velocity[:,[j],:], inputs_0, formation_enter), axis=2)
 
 
@@ -112,70 +96,52 @@ def single_evaluate(population: np.ndarray, t_max: float, lt_fitness: bool = Fal
             inputs = np.concatenate((inputs,inputs_0),axis=1)
         
         # Get action
-        acceleration = population_action(population, inputs) * max_acc
+        acceleration = population_action(config, population, inputs) * config['a_max']
 
         acceleration_magnitude = np.linalg.norm(acceleration,axis=2,keepdims=True)
-        acceleration = np.where(acceleration_magnitude < max_acc, acceleration, acceleration / acceleration_magnitude * max_acc)
+        acceleration = np.where(acceleration_magnitude < config['a_max'], acceleration, acceleration / acceleration_magnitude * config[ 'a_max'])
 
-        velocity += acceleration * dt
+        velocity += acceleration * config['dt']
 
 
-        # Cap the velocity
+        # Clip the velocity
         velocity_magnitude = np.linalg.norm(velocity,axis=2,keepdims=True)
-        velocity = np.where(velocity_magnitude < max_vel, velocity, velocity / velocity_magnitude * max_vel)
-
+        velocity = np.where(velocity_magnitude < config['v_max'], velocity, velocity / velocity_magnitude * config['v_max'])
 
         # Update the position (if not collided!)
         collided_full = np.reshape(collided, (population.shape[0],1,1))
-        positions += collided_full * velocity * dt
+        positions += collided_full * velocity * config['dt']
 
-    # Now at the end, compare to formation
-    positions_c = positions.copy() - np.reshape(np.mean(positions,axis=1),(population.shape[0],1,2))
-    formation_c = formation - np.reshape(np.mean(formation,axis=1),(1,1,2))
-
-    best_diff = np.ones((population.shape[0])) * np.inf
-    for order in permutations:
-        rel_locations = positions_c[:,list(order),:]
-        rel_dist_diff = np.mean(np.linalg.norm(rel_locations - formation_c,axis=2),axis=1)
-
-        best_diff = np.where(rel_dist_diff < best_diff, rel_dist_diff, best_diff) 
-
-    if not lt_fitness:
-        fitness = -(old_best_diff - best_diff)
-    else:
-        fitness = best_diff
-        
     # If save=True, save initial position, formation, and path
     if save:
         np.save('./tmp/initial_position.npy', initial_position)
         np.save('./tmp/formation.npy', formation)
         np.save('./tmp/position_history.npy', position_history)
 
+    # Now at the end, compare to formation
+    positions_c = positions.copy() - np.reshape(np.mean(positions,axis=1),(population.shape[0],1,2))
+    formation_c = formation - np.reshape(np.mean(formation,axis=1),(1,1,2))
+
+    f1 = np.ones(population.shape[0]) * np.inf
+    for order in permutations:
+        rel_locations = positions_c[:,list(order),:]
+        rel_dist_diff = np.mean(np.linalg.norm(rel_locations - formation_c,axis=2),axis=1)
+
+        f1 = np.where(rel_dist_diff < f1, rel_dist_diff, f1) 
 
     # Boundary conditions
-    com_end = np.mean(positions,axis=1)
-    drift = np.linalg.norm(com_end - com_start, axis=1, keepdims=True)
-    final_velocity = np.mean(np.linalg.norm(velocity,axis=2),axis=1,keepdims=True)
-    final_direction = np.mean(np.arctan2(velocity[:,:,1], velocity[:,:,0]),axis=1, keepdims=True)
+    f2 = np.mean(np.linalg.norm(velocity,axis=2),axis=1)
 
-    bcs = np.concatenate((final_velocity, drift, final_direction),axis=1)
+    return f1 + f2
 
-    return fitness, bcs
-
-def evaluate_population (population: np.ndarray, t_max: float, lt_fitness: bool = False) -> np.ndarray:
+def evaluate_population (config: dict, population: np.ndarray) -> np.ndarray:
     ''' Calculates the fitness of each genome in the population, averaged over n_evals '''
     fitnesses = np.zeros(population.shape[0])
-    bcs = np.zeros((population.shape[0], 3))
 
-    for _ in range(n_evals):
-        eval_fitness, eval_bcs = single_evaluate(population, t_max, lt_fitness)
-        fitnesses += eval_fitness
-        fitnesses += eval_bcs[:,0]
-        bcs += eval_bcs
+    for _ in range(config['n_evals']):
+        fitnesses += single_evaluate(config, population)
 
-    fitnesses /= n_evals
-    bcs /= n_evals
+    fitnesses /= config['n_evals']
 
-    # print(np.mean(bcs,axis=0), np.max(bcs,axis=0))
 
-    return fitnesses, bcs
+    return fitnesses
