@@ -2,7 +2,7 @@
 import math
 import numpy as np
 import time
-import json
+import json5,json
 
 from pymoo.model.problem import Problem
 from pymoo.algorithms.so_cmaes import CMAES
@@ -13,7 +13,8 @@ from pymoo.util.termination.default import SingleObjectiveDefaultTermination
 from evaluation import evaluate_population
 
 ## Import configuration
-from config import config
+with open('config.json') as f:
+    config = json5.load(f)
 
 
 # Initialize output streams
@@ -24,6 +25,13 @@ config_file = open('./results/{0}_c.json'.format(timestamp), 'w')
 
 json.dump(config, config_file, sort_keys=True, indent=4)
 config_file.close()
+
+# Add related parameters
+config['n_inputs'] = config['n_agents']*4 # Input neurons
+config['n_outputs'] = 2                   # Output neurons
+
+# Total number of parameters
+config['n_param'] = config['n_hidden']*config['n_inputs'] + config['n_hidden'] + config['n_hidden'] * config['n_outputs'] + config['n_outputs']
 
 ## Define the problem for pymoo
 class FormationProblem (Problem):

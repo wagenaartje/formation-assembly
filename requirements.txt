@@ -2,3 +2,4 @@ pymoo==0.4.2.2
 numpy==1.19.0
 ribs==0.4.0
 matplotlib==3.3.0
+json5==0.9.8
