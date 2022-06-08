@@ -1,7 +1,7 @@
 {
     "a_max": 2,        // Maximum acceleration [m/s^2]
     "d_min": 0.3,      // Minimum distance [m]
-    "dt": 0.01,        // Timestep [s]
+    "dt": 0.05,        // Timestep [s]
     "n_agents": 3,     // Number of agents [-]
     "n_evals": 10,     // Number of runs for evaluation [-]
     "n_gen": 5000,     // Number of generations [-]
