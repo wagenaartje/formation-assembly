@@ -41,23 +41,37 @@ def gen_points_min_dist (config: dict) -> np.ndarray:
 
     return points
 
-def single_evaluate(config: dict, population: np.ndarray, save: bool = False) -> np.ndarray:
+def single_evaluate(config: dict, population: np.ndarray, analysis: bool = False, identical_start: bool = True) -> np.ndarray:
     ''' Calculates the fitness of each genome in the population on a single evaluation'''
     permutations = list(itertools.permutations(range(config['n_agents']),config['n_agents']))
 
     loops = int(config['t_max']/config['dt'])
 
     # Initialize random initial positions and formations
-    initial_position = gen_points_min_dist(config)
+    if identical_start:
+        initial_position = gen_points_min_dist(config)
+        
+        positions = np.repeat(initial_position.copy(), population.shape[0],axis=0)
 
-    positions = np.repeat(initial_position.copy(), population.shape[0],axis=0)
+        formation = gen_points_min_dist(config)
+        formation_input = np.repeat(formation.copy(),population.shape[0],axis=0)
+    else:
+        positions = np.zeros((population.shape[0],3,2))
+        for i in range(population.shape[0]):
+            positions[i] = gen_points_min_dist(config)
+
+        formation = np.zeros((population.shape[0], 3,2))
+        for i in range(population.shape[0]):
+            formation[i] = gen_points_min_dist(config)
+
+        formation_input = formation.copy()
+
     
-    formation = gen_points_min_dist(config)
-    formation_input = np.repeat(formation.copy(),population.shape[0],axis=0)
+    
     formation_input -= np.mean(formation_input,axis=1,keepdims=True)
 
     # If save=true, log the position history
-    if save: position_history = np.zeros((loops, population.shape[0], config['n_agents'], 2))
+    if analysis: position_history = np.zeros((loops, population.shape[0], config['n_agents'], 2))
 
     velocity = np.zeros((population.shape[0],config['n_agents'],2)) 
     collided = np.ones(population.shape[0])
@@ -70,7 +84,7 @@ def single_evaluate(config: dict, population: np.ndarray, save: bool = False) ->
         positions_centered = positions - np.mean(positions,axis=1,keepdims=True)
         
 
-        if save: position_history[i] = positions.copy()
+        if analysis: position_history[i] = positions.copy()
 
         for j in range(config['n_agents']):
             # Gather inputs for 1st agent
@@ -112,27 +126,24 @@ def single_evaluate(config: dict, population: np.ndarray, save: bool = False) ->
         collided_full = np.reshape(collided, (population.shape[0],1,1))
         positions += collided_full * velocity * config['dt']
 
-    # If save=True, save initial position, formation, and path
-    if save:
-        np.save('./tmp/initial_position.npy', initial_position)
-        np.save('./tmp/formation.npy', formation)
-        np.save('./tmp/position_history.npy', position_history)
-
     # Now at the end, compare to formation
     positions_c = positions.copy() - np.reshape(np.mean(positions,axis=1),(population.shape[0],1,2))
-    formation_c = formation - np.reshape(np.mean(formation,axis=1),(1,1,2))
+    #formation_c = formation - np.reshape(np.mean(formation,axis=1),(1,1,2))
 
     f1 = np.ones(population.shape[0]) * np.inf
     for order in permutations:
         rel_locations = positions_c[:,list(order),:]
-        rel_dist_diff = np.mean(np.linalg.norm(rel_locations - formation_c,axis=2),axis=1)
+        rel_dist_diff = np.mean(np.linalg.norm(rel_locations - formation_input,axis=2),axis=1)
 
         f1 = np.where(rel_dist_diff < f1, rel_dist_diff, f1) 
 
     # Boundary conditions
     f2 = np.mean(np.linalg.norm(velocity,axis=2),axis=1)
 
-    return f1 + f2
+    if not analysis:
+        return f1 + f2
+    else:
+        return f1, f2, formation_input, position_history, collided 
 
 def evaluate_population (config: dict, population: np.ndarray) -> np.ndarray:
     ''' Calculates the fitness of each genome in the population, averaged over n_evals '''

@@ -5,11 +5,10 @@ import matplotlib.pyplot as plt
 import urllib
 
 folder = '/base/'
-keys = ['n_evals']
-
+keys = ['n_hidden']
 
 fig,ax = plt.subplots(1)
-#for folder in os.listdir('./results/'):
+
 subfolders = os.listdir('./results/' + folder)
 for subfolder in subfolders:
     fitnesses = -np.fromfile('./results/' + folder +  '/' + subfolder + '/fitnesses.dat')
@@ -24,7 +23,7 @@ for subfolder in subfolders:
     # NOTE to self: in the future, calculate std from unconvolved data. but then convolve std. 
     epochs = np.arange(fitnesses.shape[0])
 
-    n_windows = 50 # must be even
+    n_windows = 20 # must be even
     fitnesses = np.convolve(fitnesses, np.ones(n_windows) / n_windows, mode='valid')
 
 
