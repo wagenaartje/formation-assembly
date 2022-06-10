@@ -3,8 +3,8 @@ import json
 import os
 import matplotlib.pyplot as plt
 
-folder = '/amax/'
-key = 'a_max'
+folder = '/hidden/'
+key = 'n_hidden'
 
 fig,ax = plt.subplots(1)
 

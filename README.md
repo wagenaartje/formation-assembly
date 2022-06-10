@@ -1,4 +1,2 @@
 # TODO
-- Create structure of results section
-- Compare high-dt trained genomes at low-dt sampling rates. Is the performance "really" different?
-- use new scheme for multiple runs, and choose what parameters will be varied.  (both sensitivity and behavioral analysis)
+Note to self: to check if training still works, run once before handing in! Also check for multiple agents if everything still works.

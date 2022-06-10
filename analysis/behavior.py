@@ -6,7 +6,7 @@ import numpy as np
 import json
 from evaluation import single_evaluate
 
-run = './results/base/1654698799/'
+run = './results/base/1654760251/'
 
 fitnesses = np.fromfile(run + 'fitnesses.dat')
 genomes = np.fromfile(run + 'genomes.dat').reshape((fitnesses.shape[0], -1))
@@ -24,7 +24,7 @@ config['n_param'] = config['n_hidden']*config['n_inputs'] + config['n_hidden'] +
 
 
 # Select the last genome
-best_genome = genomes[[-1],:]
+best_genome = genomes[[np.argmin(fitnesses)],:]
 
 # Simulate once
 f1, f2, formation, position_history, collided = single_evaluate(config, best_genome, analysis=True)
