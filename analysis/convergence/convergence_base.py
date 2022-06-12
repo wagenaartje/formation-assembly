@@ -2,7 +2,6 @@ import numpy as np
 import json
 import os
 import matplotlib.pyplot as plt
-import urllib
 
 folder = '/base/'
 keys = ['n_hidden']
@@ -47,6 +46,8 @@ ax.set_box_aspect(1)
 ax.set_yticks([0.1, 0.2, 0.5, 1.0])
 ax.set_yticklabels([0.1, 0.2, 0.5, 1.0])
 
-plt.savefig('./figures/convergence.png', dpi=300, bbox_inches='tight')
+ax.set_ylim([0.06, 1.5])
+
+plt.savefig('./figures/convergence/base.png', dpi=300, bbox_inches='tight')
 
 plt.show()
