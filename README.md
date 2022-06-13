@@ -3,10 +3,11 @@
 by Thomas Wagenaar
 <hr>
 
-This repository provides all the code for generating the results and the subsequent figures used in my report for the course _AE4350 Bio-inspired intelligence and learning for aerospace applications_. The size of this repository is fairly large (1.5+ GB), but this is simply because of the datafiles necessary to store the results. To save space, one can clone everything but the `/results` folder.
+> This repository provides all the code for generating the results and the subsequent figures used in my report for the course _AE4350 Bio-inspired intelligence and learning for aerospace applications_. The size of this repository is fairly large (1.5+ GB), but this is simply because of the datafiles necessary to store the results. To save space, one can clone everything but the `/results` folder.
+> 
+<p>  </p>
 
-
-### How to run
+### :fast_forward: How to run
 First of all, the code was developed in Python 3.8.5 with the packages listed in `requirements.txt`. If you have Python 3.9+, you might have to change some imports of `pymoo` but everything should work. To start a single optimization run, only three files are necessary:
 
 - [base_config.json](https://github.com/wagenaartje/AE4350-formation/blob/cma/base_config.json): contains all the hyperparameters
@@ -26,8 +27,11 @@ For the given settings in `base_config.json`, training should take approximately
 
 The latter two files can be loaded with `np.fromfile()` (**not** `np.load()`).
 
+<p>  </p>
 
-### Folder explanation
+
+
+### :floppy_disk: Folder explanation
 Although the three files mentioned above are all that is necessary to perform the optimization procedure, some other scripts are present for batch training and result analysis. A small overview of the contents of each folder is given below:
 
 - `/analysis`: contains the scripts that generated the figures for the report
@@ -37,5 +41,7 @@ Although the three files mentioned above are all that is necessary to perform th
 
 **Note!** If you want to run any scripts in this repository, it must be done from the top repository directory. Do not `cd` into directories to run the scripts.
 
-### Contact
+<p>  </p>
+
+### :mailbox: Contact
 t.wagenaar-1@student.tudelft.nl
