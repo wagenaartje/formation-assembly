@@ -48,8 +48,8 @@ def optimal_index (initial_positions, formations):
 
 
 
-    best_diff = np.ones(population.shape[0]) * np.inf
-    best_order_index = np.zeros(population.shape[0])
+    best_diff = np.ones(formations.shape[0]) * np.inf
+    best_order_index = np.zeros(formations.shape[0])
     for i in range(len(permutations)):
         order = permutations[i]
         # permute formation, and see for which relative distances is most similar.
@@ -58,13 +58,15 @@ def optimal_index (initial_positions, formations):
         rel_dist_diff = np.max(np.linalg.norm(centered_positions - formation_copy,axis=2),axis=1)
 
 
-        best_order_index = np.where(rel_dist_diff < best_diff, np.ones(population.shape[0]) * i, best_order_index)
+        best_order_index = np.where(rel_dist_diff < best_diff, np.ones(formations.shape[0]) * i, best_order_index)
         best_diff = np.where(rel_dist_diff < best_diff, rel_dist_diff, best_diff)
 
 
     return best_order_index, best_diff
 
 
+position_history = position_history[:,collided == 1, :,:]
+formation = formation[collided==1,:,:]
 
 
 optimal_indexing, minimal_max = optimal_index(position_history[0,:,:,:], formation)
@@ -75,7 +77,7 @@ permutations = list(itertools.permutations(range(config['n_agents']),config['n_a
 
 formation = formation  - np.mean(formation,axis=1,keepdims=True)+ np.mean(position_history[0,:,:,:],axis=1,keepdims=True)
 
-for i in range(N):
+for i in range(formation.shape[0]):
     formation[i,:,:] = formation[i,permutations[true_indexing[i]], :]
 
 #true_max = np.max(np.linalg.norm(formation[:,permutations[true_indexing[],:] - position_history[0,:,:,:],axis=2),axis=1)
@@ -85,8 +87,8 @@ true_max = np.max(np.linalg.norm(formation - position_history[0,:,:,:],axis=2),a
 true_max = np.around(true_max, 2)
 minimal_max = np.around(minimal_max, 2)
 
-print(np.sum(minimal_max == true_max) / N * 100, '%')
+print(np.sum(minimal_max == true_max) / formation.shape[0] * 100, '%')
 
-print(np.sum(optimal_indexing == true_indexing) / N * 100, '%')
+print(np.sum(optimal_indexing == true_indexing) / formation.shape[0] * 100, '%')
 
 # Now compare with the true indexing
