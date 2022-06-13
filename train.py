@@ -59,6 +59,7 @@ class MyDisplay(Display):
 def train (subfolder: str, config: dict) -> None:
     # Initialize output streams
     timestamp = int(time.time())
+    os.makedirs('./results/', exist_ok=True)
     os.makedirs('./results/{0}/'.format(subfolder), exist_ok=True)
     os.makedirs('./results/{0}/{1}/'.format(subfolder, timestamp), exist_ok=True)
     fitness_file = open('./results/{0}/{1}/fitnesses.dat'.format(subfolder, timestamp),mode='wb+')
