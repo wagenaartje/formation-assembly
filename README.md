@@ -5,7 +5,8 @@ by Thomas Wagenaar
 
 > This repository provides all the code for generating the results and the subsequent figures used in my report for the course _AE4350 Bio-inspired intelligence and learning for aerospace applications_. The size of this repository is fairly large (1.5+ GB), but this is simply because of the datafiles necessary to store the results. To save space, one can clone everything but the `/results` folder.
 > 
-<p>  </p>
+
+<p align='center'><img src="https://github.com/wagenaartje/AE4350-formation/blob/cma/figures/a_heat_map.png?raw=true"></p>
 
 ### :fast_forward: How to run
 First of all, the code was developed in Python 3.8.5 with the packages listed in `requirements.txt`. If you have Python 3.9+, you might have to change some imports of `pymoo` but everything should work. To start a single optimization run, only three files are necessary:
