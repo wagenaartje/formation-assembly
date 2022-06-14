@@ -38,7 +38,7 @@ for key in all_fitnesses:
     f_mean = np.convolve(f_mean, np.ones(n_windows) / n_windows, mode='valid')
     f_std = np.convolve(f_std, np.ones(n_windows) / n_windows, mode='valid')
 
-    ax.semilogy(epochs, f_mean, label=r'$t_{{max}}={0}\ \mathrm{{s}}$'.format(key))
+    ax.semilogy(epochs, f_mean, label=r'$T={0}\ \mathrm{{s}}$'.format(key))
     ax.fill_between(epochs, f_mean - f_std, f_mean+f_std,  alpha=0.5)
 
 key = 't_max'

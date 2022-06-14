@@ -33,16 +33,16 @@ N = 10000
 population = np.repeat(best_genome, N, axis=0)
 
 
-config['dt'] = 0.001
-config['t_max'] = 10
+config['dt'] = 0.01
+config['t_max'] = 5
 
 f1s, f2s, formation, position_history, collided = single_evaluate(config, population, analysis=True, identical_start=False)
 
 
 
-print('f: ', np.mean(f1s+f2s))
-print('f1:', np.mean(f1s))
-print('f2:', np.mean(f2s))
+print('f: ', np.mean(f1s+f2s), np.std(f1s+f2s))
+print('f1:', np.mean(f1s), np.std(f1s))
+print('f2:', np.mean(f2s), np.std(f2s))
 print('Collision rate:', np.sum(collided==0) / N * 100 ,'%')
 print('Success rate:', np.sum(f1s<0.1) / N * 100, '%')
 
