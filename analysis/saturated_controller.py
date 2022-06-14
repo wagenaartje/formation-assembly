@@ -66,7 +66,7 @@ heatmap = gaussian_filter(heatmap, sigma=0.5)
 #plt.pcolor(heatmap.T,norm=matplotlib.colors.LogNorm(), cmap='jet')
 plt.imshow(heatmap.T, extent=extent, origin='lower', cmap='jet',norm=matplotlib.colors.LogNorm(), vmin=10e-7)
 cbar = plt.colorbar()
-cbar.set_label('Number of visits')
+cbar.set_label('Probability')
 
 ax.set_xlabel(r'$a_x\ \mathrm{(m\ s^{-2})}$', fontsize=12)
 ax.set_ylabel(r'$a_y\ \mathrm{(m\ s^{-2})}$', fontsize=12)
@@ -75,7 +75,7 @@ ax.set_ylabel(r'$a_y\ \mathrm{(m\ s^{-2})}$', fontsize=12)
 ax.set_box_aspect(1)
 plt.locator_params(nbins=5)
 
-plt.savefig('./figures/a_heat_{0}.png'.format(config['dt']), bbox_inches='tight')
+plt.savefig('./figures/a_heat_{0}.png'.format(config['dt']), bbox_inches='tight',dpi=300)
 
 fig, ax = plt.subplots(1)
 
@@ -104,7 +104,7 @@ heatmap = gaussian_filter(heatmap, sigma=0.5)
 #plt.pcolor(heatmap.T,norm=matplotlib.colors.LogNorm(), cmap='jet')
 plt.imshow(heatmap.T, extent=extent, origin='lower', cmap='jet',norm=matplotlib.colors.LogNorm(), vmin=10e-7)
 cbar = plt.colorbar()
-cbar.set_label('Number of visits')
+cbar.set_label('Probability')
 
 ax.set_xlabel(r'$v_x\ \mathrm{(m\ s^{-1})}$', fontsize=12)
 ax.set_ylabel(r'$v_y\ \mathrm{(m\ s^{-1})}$', fontsize=12)
@@ -112,6 +112,6 @@ ax.set_ylabel(r'$v_y\ \mathrm{(m\ s^{-1})}$', fontsize=12)
 ax.set_box_aspect(1)
 
 plt.locator_params(nbins=5)
-plt.savefig('./figures/v_heat_{0}.png'.format(config['dt']), bbox_inches='tight')
+plt.savefig('./figures/v_heat_{0}.png'.format(config['dt']), bbox_inches='tight',dpi=300)
 
 plt.show()
