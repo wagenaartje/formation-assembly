@@ -15,7 +15,7 @@ genomes = np.fromfile(run + 'genomes.dat').reshape((fitnesses.shape[0], -1))
 with open(run + 'config.json') as f:
     config = json.load(f)
 
-config['dt'] = 0.001
+config['dt'] = 0.1
 
 # Add related parameters
 config['n_inputs'] = config['n_agents']*4 # Input neurons
@@ -64,52 +64,10 @@ extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
 heatmap = gaussian_filter(heatmap, sigma=0.5)
 #plt.pcolor(heatmap.T,norm=matplotlib.colors.LogNorm(), cmap='jet')
 plt.imshow(heatmap.T, extent=extent, origin='lower', cmap='jet',norm=matplotlib.colors.LogNorm(),vmin=1)
-cbar = plt.colorbar()
-cbar.set_label('Number of visits')
-
-ax.set_xlabel(r'$a_x\ \mathrm{(m\ s^{-2})}$', fontsize=12)
-ax.set_ylabel(r'$a_y\ \mathrm{(m\ s^{-2})}$', fontsize=12)
-
 
 ax.set_box_aspect(1)
-plt.locator_params(nbins=5)
+plt.axis('off')
 
-plt.savefig('./figures/a_heat_{0}.png'.format(config['dt']), bbox_inches='tight')
-
-fig, ax = plt.subplots(1)
-
-
-
-
-''' Velocity & acceleration '''
-acceleration_c = np.diff(position_history,n=1,axis=0) / config['dt']
-
-print(acceleration_c.shape)
-
-print(acceleration_c.shape)
-acceleration_c = np.reshape(acceleration_c, (-1, 2))
-
-keep = np.linalg.norm(acceleration_c, axis=1) <= config['v_max']
-acceleration_c = acceleration_c[keep]
-
-xedges = np.linspace(-1.1, 1.1, 100)
-yedges = np.linspace(-1.1, 1.1, 100)
-
-heatmap, xedges, yedges = np.histogram2d(acceleration_c[:,0], acceleration_c[:,1], bins=(xedges, yedges))
-extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
-
-heatmap = gaussian_filter(heatmap, sigma=0.5)
-#plt.pcolor(heatmap.T,norm=matplotlib.colors.LogNorm(), cmap='jet')
-plt.imshow(heatmap.T, extent=extent, origin='lower', cmap='jet',norm=matplotlib.colors.LogNorm(),vmin=1)
-cbar = plt.colorbar()
-cbar.set_label('Number of visits')
-
-ax.set_xlabel(r'$v_x\ \mathrm{(m\ s^{-1})}$', fontsize=12)
-ax.set_ylabel(r'$v_y\ \mathrm{(m\ s^{-1})}$', fontsize=12)
-
-ax.set_box_aspect(1)
-
-plt.locator_params(nbins=5)
-plt.savefig('./figures/v_heat_{0}.png'.format(config['dt']), bbox_inches='tight')
+plt.savefig('./figures/a_heat_map.png'.format(config['dt']), bbox_inches='tight')
 
 plt.show()
