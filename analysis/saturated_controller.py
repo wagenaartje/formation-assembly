@@ -58,12 +58,13 @@ xedges = np.linspace(-2.2, 2.2, 100)
 yedges = np.linspace(-2.2, 2.2, 100)
 
 heatmap, xedges, yedges = np.histogram2d(acceleration_c[:,0], acceleration_c[:,1], bins=(xedges, yedges))
+heatmap /= np.sum(heatmap)
 extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
 
 
 heatmap = gaussian_filter(heatmap, sigma=0.5)
 #plt.pcolor(heatmap.T,norm=matplotlib.colors.LogNorm(), cmap='jet')
-plt.imshow(heatmap.T, extent=extent, origin='lower', cmap='jet',norm=matplotlib.colors.LogNorm(),vmin=1)
+plt.imshow(heatmap.T, extent=extent, origin='lower', cmap='jet',norm=matplotlib.colors.LogNorm(), vmin=10e-7)
 cbar = plt.colorbar()
 cbar.set_label('Number of visits')
 
@@ -96,11 +97,12 @@ xedges = np.linspace(-1.1, 1.1, 100)
 yedges = np.linspace(-1.1, 1.1, 100)
 
 heatmap, xedges, yedges = np.histogram2d(acceleration_c[:,0], acceleration_c[:,1], bins=(xedges, yedges))
+heatmap /= np.sum(heatmap)
 extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
 
 heatmap = gaussian_filter(heatmap, sigma=0.5)
 #plt.pcolor(heatmap.T,norm=matplotlib.colors.LogNorm(), cmap='jet')
-plt.imshow(heatmap.T, extent=extent, origin='lower', cmap='jet',norm=matplotlib.colors.LogNorm(),vmin=1)
+plt.imshow(heatmap.T, extent=extent, origin='lower', cmap='jet',norm=matplotlib.colors.LogNorm(), vmin=10e-7)
 cbar = plt.colorbar()
 cbar.set_label('Number of visits')
 
