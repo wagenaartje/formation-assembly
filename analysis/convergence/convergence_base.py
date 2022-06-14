@@ -39,7 +39,7 @@ ax.fill_between(epochs, f_mean - f_std, f_mean+f_std, alpha=0.5)
 
 ax.set_xlabel('Epoch',fontsize=12)
 ax.set_ylabel(r'$\bar{f}$', fontsize=12)
-ax.legend()
+#ax.legend()
 ax.set_xlim([0, 5000])
 ax.grid(True, which="both")
 ax.set_box_aspect(1)
